@@ -3,7 +3,6 @@
     networking.hostName = lib.mkDefault "nixos-cluster";
 
     networking.firewall.enable = lib.mkDefault true;
-    networking.firewall.allowedTCPPorts = [];
-    networking.firewall.allowedUDPPorts = [];
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
   };
 }
