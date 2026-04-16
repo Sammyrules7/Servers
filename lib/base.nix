@@ -27,11 +27,6 @@
       default = "";
       description = "K3s server address for additional masters/agents";
     };
-    flannelIface = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = "Flannel interface (e.g. tailscale0 for Tailscale)";
-    };
   };
 
   options.tailscale = {
@@ -45,7 +40,6 @@
         package = pkgs.k3s;
         clusterInit = config.k3s.clusterInit;
         serverAddr = config.k3s.serverAddr;
-        extraFlags = lib.mkIf (config.k3s.flannelIface != "") [ "--flannel-iface=${config.k3s.flannelIface}" ];
       };
       environment.sessionVariables = {
         KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";

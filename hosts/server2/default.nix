@@ -4,7 +4,6 @@
   k3s.enable = true;
   k3s.role = "agent";
   k3s.serverAddr = "https://192.168.1.11:6443";
-  k3s.flannelIface = "tailscale0";
   tailscale.enable = true;
 
   nixpkgs.system = "x86_64-linux";
