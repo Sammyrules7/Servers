@@ -11,13 +11,4 @@
 
 deploy.host = "192.168.1.11";
 
-  sops = {
-    defaultSopsFile = ../../secrets/k3s.yaml;
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    secrets = {
-      "k3s-agent-token" = {
-        key = "agent_token";
-      };
-    };
-  };
-}
+  }

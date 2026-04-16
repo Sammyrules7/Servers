@@ -3,7 +3,7 @@
 
   k3s.enable = true;
   k3s.role = "master";
-  k3s.serverAddr = "https://192.168.1.11:6443";
+  k3s.serverAddr = "https://100.74.161.102:6443";
   tailscale.enable = true;
 
   nixpkgs.system = "x86_64-linux";
@@ -11,13 +11,4 @@
 
 deploy.host = "192.168.1.13";
 
-  sops = {
-    defaultSopsFile = ../../secrets/k3s.yaml;
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    secrets = {
-      "k3s-agent-token" = {
-        key = "agent_token";
-      };
-    };
-  };
-}
+  }

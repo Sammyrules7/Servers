@@ -6,5 +6,5 @@ cd "$(dirname "$0")"
 TARGET="${1:-.}"
 
 echo "=== Deploying to $TARGET ==="
-nix run github:serokell/deploy-rs "$TARGET"
+nix run github:serokell/deploy-rs -- "$TARGET"
 echo "=== Done ==="
