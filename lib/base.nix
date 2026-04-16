@@ -40,6 +40,7 @@
         package = pkgs.k3s;
         clusterInit = config.k3s.clusterInit;
         serverAddr = config.k3s.serverAddr;
+        tokenFile = config.sops.secrets."k3s-agent-token".path;
       };
       environment.sessionVariables = {
         KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";

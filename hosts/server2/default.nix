@@ -11,6 +11,17 @@
 
   deploy.host = "192.168.1.12";
 
+  sops = {
+    defaultSopsFile = ../../secrets/k3s.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    secrets = {
+      "k3s-agent-token" = {
+        key = "k3s.agent_token";
+        format = "yaml";
+      };
+    };
+  };
+
   # Old machine is legacy only boot
   boot.loader = lib.mkForce {
     systemd-boot.enable = false;

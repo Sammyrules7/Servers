@@ -20,6 +20,14 @@
   }: let
     deployModule = import ./lib/deploy.nix { inherit deploy-rs self; };
   in {
+    devShells.x86_64-linux.default = (nixpkgs.legacyPackages.x86_64-linux.mkShell {
+      packages = [
+        (nixpkgs.legacyPackages.x86_64-linux.sops.overrideAttrs (old: {
+          buildInputs = old.buildInputs or [];
+        }))
+      ];
+    });
+
     nixosConfigurations = {
       server1 = nixpkgs.lib.nixosSystem {
         modules = [ ./hosts/server1 sops-nix.nixosModules.sops ];
