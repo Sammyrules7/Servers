@@ -4,7 +4,7 @@
   nixpkgs.system = "x86_64-linux";
   networking.hostName = "server2";
 
-  deploy.host = "192.168.1.12";
+  deploy.host = "server2";
 
   # Old machine is legacy only boot
   boot.loader = lib.mkForce {

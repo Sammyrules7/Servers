@@ -4,5 +4,5 @@
   nixpkgs.system = "x86_64-linux";
   networking.hostName = "server3";
 
-  deploy.host = "192.168.1.13";
+  deploy.host = "server3";
 }
