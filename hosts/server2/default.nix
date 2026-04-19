@@ -6,6 +6,10 @@
 
   deploy.host = "server2";
 
+  k3s.enable = true;
+  k3s.role = "agent";
+  k3s.nodeIP = "100.86.214.46";
+
   # Old machine is legacy only boot
   boot.loader = lib.mkForce {
     systemd-boot.enable = false;

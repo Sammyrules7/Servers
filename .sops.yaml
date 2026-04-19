@@ -1,0 +1,11 @@
+creation_rules:
+  - encrypted_regex: ^(k3s-token|token|password|secret|key)$
+    age:
+      # Workstations
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICBbJZYAoaiso9r80YdbBkqFZ1bggET4EEkzZ9ckBbGW"
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvbJQ3KnO165S9pyfQ5qHXFv51cw3LmsvUn6Xo2Bbr7"
+      # Servers
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMHiqVkrnP9Xhrn+/l86AIZzY9H5eSuEyes9slwQyinf root@nixos"
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIgZUOGm0yOmOh2YVlNTc4m48xtGLbnDAIX+kTIQ//yV root@nixos"
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEGWUrBXF8iyD8VjX+MncUdGbRTpFgUgR6oFrZ1hBK0A root@nixos"
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJkhMHOvMCG3ZShDK8G3bB7rY2FjFoVsNak6ztY/osiM root@nixos"

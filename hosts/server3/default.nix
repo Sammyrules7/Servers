@@ -5,4 +5,8 @@
   networking.hostName = "server3";
 
   deploy.host = "server3";
+
+  k3s.enable = true;
+  k3s.role = "server";
+  k3s.nodeIP = "100.119.85.83";
 }
