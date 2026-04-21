@@ -1,5 +1,5 @@
 creation_rules:
-  - encrypted_regex: ^(k3s-token|token|password|secret|key)$
+  - encrypted_regex: (github-token|k3s-token|token|password|secret|key)
     age:
       # Workstations
       - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICBbJZYAoaiso9r80YdbBkqFZ1bggET4EEkzZ9ckBbGW"

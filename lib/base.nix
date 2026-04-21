@@ -10,8 +10,9 @@
      ./nix-gc.nix
      ./nix.nix
      ./tailscale.nix
-     ./k3s.nix
-   ];
+./k3s.nix
+      ./fluxcd.nix
+    ];
 
   environment.systemPackages = [
     pkgs.ghostty.terminfo
