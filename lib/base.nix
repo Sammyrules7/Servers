@@ -13,6 +13,8 @@
      ./k3s.nix
     ];
 
+    # Longhorn modules
+    services.envfs.enable = true;
     boot.kernelModules = [
       "dm_snapshot"
       "dm_mirror"
