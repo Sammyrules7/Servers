@@ -14,8 +14,15 @@
       ./fluxcd.nix
     ];
 
-  boot.kernelModules = [ "dm_snapshot" "dm_mirror" "dm_thin_pool" "iscsi_tcp" "iscsi_target_mod" "target_core_mod" "uio" ];
-  boot.initrd.kernelModules = [ "dm_snapshot" "dm_mirror" "dm_thin_pool" ];
+    boot.kernelModules = [
+      "dm_snapshot"
+      "dm_mirror"
+      "dm_thin_pool"
+      "dm_multipath"
+      "iscsi_tcp"
+      "iscsi_target_mod"
+      "target_core_mod"
+    ];
 
   services.openiscsi = {
     enable = true;
