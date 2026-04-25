@@ -10,8 +10,7 @@
      ./nix-gc.nix
      ./nix.nix
      ./tailscale.nix
-./k3s.nix
-      ./fluxcd.nix
+     ./k3s.nix
     ];
 
     boot.kernelModules = [
