@@ -1,0 +1,23 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: main-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: k3s-config
+  url: https://github.com/sammyrules7/Servers
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: main-kustomize
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: main-repo
+  path: ./kustomization
+  prune: true
