@@ -22,8 +22,6 @@ spec:
         name: longhorn
         namespace: flux-system
   interval: 1m0s
-  install:
-    createNamespace: true
   values:
     persistence:
       defaultClassReplicaCount: 1
