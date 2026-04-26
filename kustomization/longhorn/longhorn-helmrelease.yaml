@@ -16,7 +16,6 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: "1.11.1"
       reconcileStrategy: Revision
       sourceRef:
         kind: HelmRepository
