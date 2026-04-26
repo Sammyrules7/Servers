@@ -14,9 +14,9 @@
       ./kubernetes/longhorn.nix
      ];
 
-   environment.systemPackages = [
-     pkgs.ghostty.terminfo
-   ];
+  environment.systemPackages = [
+    pkgs.ghostty.terminfo
+  ];
 
    sops = {
      defaultSopsFile = "${self}/secrets.yaml";
