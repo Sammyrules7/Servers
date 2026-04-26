@@ -1,0 +1,6 @@
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: default-engine-image
+  namespace: longhorn-system
+value: longhornio/longhorn-engine:v1.11.1

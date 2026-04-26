@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - longhorn-helmrelease.yaml
+  - default-engine-image-setting.yaml
