@@ -24,8 +24,9 @@ spec:
   interval: 1m0s
   values:
     persistence:
-      defaultClassReplicaCount: 1
+      defaultClassReplicaCount: 2
     defaultSettings:
-      defaultReplicaCount: 1
+      defaultReplicaCount: 2
+      defaultDataLocality: "best-effort"
     longhornUI:
       replicas: 1
