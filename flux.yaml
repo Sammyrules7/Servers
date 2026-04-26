@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: main
+    branch: monitoring
   url: https://github.com/sammyrules7/Servers
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
