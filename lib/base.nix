@@ -41,7 +41,6 @@
     pkgs.bash
     pkgs.nfs-utils
     pkgs.jq
-    pkgs.openiscsi
   ];
 
    sops = {
