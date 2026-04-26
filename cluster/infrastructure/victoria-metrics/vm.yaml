@@ -1,0 +1,24 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: victoria-metrics
+  namespace: metrics
+spec:
+  interval: 15m0s
+  url: https://victoriametrics.github.io/helm-charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-metrics-k8s-stack
+  namespace: metrics
+spec:
+  interval: 15m0s
+  chart:
+    spec:
+      chart: victoria-metrics-k8s-stack
+      version: "0.74.x"
+      sourceRef:
+        kind: HelmRepository
+        name: victoria-metrics
+        namespace: metrics
