@@ -11,7 +11,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: longhorn
-  namespace: longhorn-system
+  namespace: longhorn-system-new
 spec:
   chart:
     spec:
