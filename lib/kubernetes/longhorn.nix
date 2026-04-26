@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Longhorn modules
@@ -23,7 +23,7 @@
   # Enable NFS client for Longhorn RWX volumes
   services.rpcbind.enable = true;
 
-  environment.systemPackages = with config.pkgs; [
+  environment.systemPackages = with pkgs; [
     bash
     nfs-utils
     jq
