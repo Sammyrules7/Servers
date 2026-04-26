@@ -22,13 +22,26 @@
       "iscsi_tcp"
     ];
 
-  services.openiscsi = {
-    enable = true;
-    name = "iqn.2016-04.com.open-iscsi:${config.networking.hostName}";
-  };
+    services.openiscsi = {
+      enable = true;
+      name = "iqn.2016-04.com.open-iscsi:${config.networking.hostName}";
+    };
+
+    # Workaround for Longhorn on NixOS: bind Nix paths to /bin for nsenter
+    systemd.services.iscsid.serviceConfig = {
+      PrivateMounts = "yes";
+      BindPaths = "/run/current-system/sw/bin:/bin";
+    };
+
+    # Enable NFS client for Longhorn RWX volumes
+    services.rpcbind.enable = true;
 
   environment.systemPackages = [
     pkgs.ghostty.terminfo
+    pkgs.bash
+    pkgs.nfs-utils
+    pkgs.jq
+    pkgs.openiscsi
   ];
 
    sops = {
