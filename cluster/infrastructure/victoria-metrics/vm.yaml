@@ -22,3 +22,16 @@ spec:
         kind: HelmRepository
         name: victoria-metrics
         namespace: metrics
+  values:
+    grafana:
+      enabled: true
+      sidecar:
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          searchNamespace: ALL
+        datasources:
+          enabled: true
+    prometheus:
+      prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
