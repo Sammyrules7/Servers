@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 15m0s
-  url: oci://ghcr.io/rajsinghtech/charts
+  url: oci://ghcr.io/rajsinghtech/charts/garage-operator
   type: oci
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
