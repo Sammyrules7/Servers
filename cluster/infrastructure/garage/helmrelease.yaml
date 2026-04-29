@@ -23,4 +23,6 @@ spec:
         name: garage-operator
         namespace: flux-system
   interval: 15m0s
-  #values:
+  values:
+    persistence:
+      storageClass: local-path
