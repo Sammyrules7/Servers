@@ -24,5 +24,6 @@ spec:
         namespace: flux-system
   interval: 15m0s
   values:
-    persistence:
-      storageClass: local-path
+    garage:
+      storage:
+        storageClassName: local-path
