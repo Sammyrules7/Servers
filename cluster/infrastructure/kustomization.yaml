@@ -4,3 +4,4 @@ resources:
   - ./longhorn
   - ./victoria-metrics
   - ./cloudnative-pg
+  - ./garage
