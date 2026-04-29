@@ -27,3 +27,7 @@ spec:
     garage:
       storage:
         storageClassName: local-path
+    metrics:
+      enabled: true
+    grafanaDashboard:
+      enabled: true
