@@ -1,4 +1,3 @@
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -9,21 +8,3 @@ spec:
   url: oci://ghcr.io/rajsinghtech
   type: oci
   passCredentials: false
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: garage-operator
-  namespace: garage-operator-system
-spec:
-  chart:
-    spec:
-      chart: charts/garage-operator
-      version: "0.3.2"
-      sourceRef:
-        kind: HelmRepository
-        name: garage-operator
-        namespace: flux-system
-  interval: 15m0s
-  values:
-    # Basic configuration
