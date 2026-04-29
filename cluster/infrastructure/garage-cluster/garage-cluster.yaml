@@ -2,15 +2,15 @@ apiVersion: garage.rajsingh.info/v1alpha1
 kind: GarageCluster
 metadata:
   name: garage
-  namespace: garage-operator-system
+  namespace: default
 spec:
   replicas: 3
-  zone: us-east-1
+  zone: awawa
   replication:
     factor: 3
   storage:
     data:
-      size: 10Gi  # Basic size
+      size: 10Gi
   network:
     rpcSecretRef:
       name: garage-rpc-secret
