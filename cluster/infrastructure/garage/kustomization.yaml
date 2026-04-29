@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: garage-operator-system
 resources:
   - namespace.yaml
+  - helmrelease.yaml
