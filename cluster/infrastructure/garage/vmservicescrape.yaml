@@ -6,13 +6,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: garage-operator
+      app.kubernetes.io/name: garage-operator-metrics
   endpoints:
     - port: metrics
       path: /metrics
       scheme: http
       interval: 30s
-      relabelings:
-        - action: keep
-          regex: metrics
-          sourceLabels: [__meta_kubernetes_pod_container_port_name]
+      #relabelings:
+      #  - action: keep
+      #    regex: metrics
+      #    sourceLabels: [__meta_kubernetes_pod_container_port_name]
