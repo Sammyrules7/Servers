@@ -6,8 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      # This matches the service label from your previous output
-      app.kubernetes.io/name: garage-operator-metrics
+      app.kubernetes.io/name: garage-operator
   endpoints:
     - port: https
       path: /metrics
