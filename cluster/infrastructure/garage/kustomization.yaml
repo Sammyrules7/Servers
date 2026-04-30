@@ -3,13 +3,3 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrelease.yaml
-  - vmservicescrape.yaml
-patches:
-  - patch: |-
-      - op: replace
-        path: /spec/ports/0/name
-        value: http
-    target:
-      kind: Service
-      name: garage-operator-metrics
-      namespace: garage-system
