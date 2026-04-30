@@ -1,0 +1,13 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: garage-cluster-metrics
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      garage.rajsingh.info/cluster: garage
+  endpoints:
+    - port: admin
+      path: /metrics
+      scheme: http
