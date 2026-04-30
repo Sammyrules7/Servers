@@ -8,6 +8,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: garage-operator
   endpoints:
-    - port: "8443"
+    - port: https
       path: /metrics
       scheme: http
