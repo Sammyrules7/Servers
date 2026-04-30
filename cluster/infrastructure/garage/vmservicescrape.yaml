@@ -4,11 +4,14 @@ metadata:
   name: garage-operator-metrics
   namespace: garage-system
 spec:
-  # This selector should match the labels on the Service created by the garage-operator helm chart
   selector:
     matchLabels:
+      # This matches the service label from your previous output
       app.kubernetes.io/name: garage-operator-metrics
   endpoints:
-    - port: metrics # This should match the name of the port in the garage-operator Service
+    - port: https
       path: /metrics
-      interval: 30s
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
