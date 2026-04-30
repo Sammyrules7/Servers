@@ -4,3 +4,8 @@ resources:
   - namespace.yaml
   - helmrelease.yaml
   - vmservicescrape.yaml
+patches:
+  - path: service-patch.yaml
+    target:
+      kind: Service
+      name: garage-operator-metrics
