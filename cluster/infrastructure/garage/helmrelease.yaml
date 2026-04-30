@@ -24,11 +24,5 @@ spec:
         namespace: flux-system
   interval: 15m0s
   values:
-    garage:
-      storage:
-        storageClassName: local-path
-    metrics:
-      enabled: true
-      secure: false
     grafanaDashboard:
       enabled: true
