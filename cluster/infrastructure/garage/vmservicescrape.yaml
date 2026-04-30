@@ -12,3 +12,7 @@ spec:
       path: /metrics
       scheme: http
       interval: 30s
+      relabelings:
+        - action: keep
+          regex: metrics
+          sourceLabels: [__meta_kubernetes_pod_container_port_name]
