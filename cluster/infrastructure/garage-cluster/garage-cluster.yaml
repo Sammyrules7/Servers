@@ -11,6 +11,7 @@ spec:
   storage:
     data:
       size: 10Gi
+      storageClassName: local-path
   network:
     rpcSecretRef:
       name: garage-rpc-secret
