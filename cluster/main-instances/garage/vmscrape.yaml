@@ -15,20 +15,3 @@ spec:
     - port: "admin"
       path: /metrics
       interval: 30s
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMServiceScrape
-metadata:
-  name: garage-cluster-metrics
-  namespace: garage-cluster
-spec:
-  namespaceSelector:
-    matchNames:
-      - garage-cluster
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: garage
-endpoints:
-    - port: admin
-      path: /metrics
-      interval: 30s
