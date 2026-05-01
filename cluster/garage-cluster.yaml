@@ -5,9 +5,9 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-  - name: infrastructure
+    - name: infrastructure
   interval: 5m
-  path: ./cluster/infrastructure/garage-cluster
+  path: ./cluster/main-instances/garage
   prune: true
   sourceRef:
     kind: GitRepository
