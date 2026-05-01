@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: garage-cluster-metrics
+  namespace: garage-cluster
+spec:
+  namespaceSelector:
+    matchNames:
+      - garage-cluster
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: garage
+      app.kubernetes.io/instance: garage-main-cluster
+  podMetricsEndpoints:
+    - port: "admin-rpc"
+      path: /metrics
+      interval: 30s
