@@ -4,8 +4,9 @@ metadata:
   name: victoria-metrics
   namespace: metrics
 spec:
-  interval: 15m0s
+  interval: 1h
   url: https://victoriametrics.github.io/helm-charts/
+
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -17,12 +18,16 @@ spec:
   chart:
     spec:
       chart: victoria-metrics-k8s-stack
-      version: "0.74.x"
+      version: "0.76.x"
       sourceRef:
         kind: HelmRepository
         name: victoria-metrics
         namespace: metrics
   values:
+    vmagent:
+      spec:
+        externalLabels:
+          Dum: "mmy"
     grafana:
       enabled: true
       sidecar:

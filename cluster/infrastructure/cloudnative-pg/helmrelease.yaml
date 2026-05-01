@@ -25,6 +25,8 @@ spec:
         namespace: flux-system
 
   values:
-    replicaCount: 3
+    replicaCount: 2
     monitoring:
       podMonitorEnabled: true
+      grafanaDashboard:
+        create: true
