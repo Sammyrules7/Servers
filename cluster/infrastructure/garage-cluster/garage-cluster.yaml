@@ -1,25 +1,17 @@
 apiVersion: garage.rajsingh.info/v1alpha1
 kind: GarageCluster
 metadata:
-  name: garage
-  namespace: default
+  name: garage-main-cluster
+  namespace: garage-cluster
 spec:
   replicas: 3
-  zone: awawa
   replication:
-    factor: 3
+    factor: 2
+  layoutPolicy: Auto
   storage:
+    metadata:
+      size: 1Gi
+      storageClassName: local-path
     data:
       size: 10Gi
       storageClassName: local-path
-  network:
-    rpcSecretRef:
-      name: garage-rpc-secret
-      key: rpc-secret
-  admin:
-    enabled: true
-    adminTokenSecretRef:
-      name: garage-admin-token
-      key: admin-token
-  monitoring:
-    enabled: true
