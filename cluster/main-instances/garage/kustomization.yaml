@@ -4,3 +4,4 @@ namespace: garage-cluster
 resources:
   - garage-cluster.yaml
   - namespace.yaml
+  - vmscrape.yaml
