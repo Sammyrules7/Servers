@@ -1,0 +1,28 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: garage-operator
+  namespace: flux-system
+spec:
+  interval: 15m0s
+  url: oci://ghcr.io/rajsinghtech/charts
+  type: oci
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: garage-operator
+  namespace: garage-system
+spec:
+  chart:
+    spec:
+      chart: garage-operator
+      version: "0.3.x"
+      sourceRef:
+        kind: HelmRepository
+        name: garage-operator
+        namespace: flux-system
+  interval: 15m0s
+  values:
+    grafanaDashboard:
+      enabled: true
