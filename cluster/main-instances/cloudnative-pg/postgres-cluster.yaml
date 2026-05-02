@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: tenant1-db
+  namespace: tenant1
+spec:
+  instances: 2
+  storage:
+    size: 1Gi
+  monitoring:
+    enablePodMonitor: true
+  users:
+    - name: tenant1_user
+  databases:
+    - name: tenant1_db
+      owner: tenant1_user
