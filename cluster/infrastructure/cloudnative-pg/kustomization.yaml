@@ -4,4 +4,3 @@ namespace: cnpg-system
 resources:
   - namespace.yaml
   - helmrelease.yaml
-  #- testdb.yaml

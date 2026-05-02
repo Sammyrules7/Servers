@@ -4,3 +4,4 @@ namespace: metrics
 resources:
   - namespace.yaml
   - vm.yaml
+  - ./prometheus-crds
