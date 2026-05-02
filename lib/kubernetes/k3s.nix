@@ -32,6 +32,12 @@ in {
       default = "";
       description = "IP address k3s binds to (usually Tailscale IP)";
     };
+
+    nodeLabels = mkOption {
+      type = types.attrsOf types.str;
+      default = {};
+      description = "Node labels to apply (e.g., topology.kubernetes.io/zone)";
+    };
   };
 
    config = lib.mkIf cfg.enable {
@@ -53,9 +59,19 @@ in {
       clusterInit = true;
     };
 
-    environment.etc."rancher/k3s/config.yaml".text = ''
-      flannel-iface: tailscale0
-    '';
+    environment.etc."rancher/k3s/config.yaml".text = lib.mkMerge [
+      ''
+        flannel-iface: tailscale0
+      ''
+      (lib.optionalString (cfg.nodeLabels != {})
+        (let
+          labelPairs = lib.mapAttrsToList (name: value: "${name}=${value}") cfg.nodeLabels;
+        in ''
+
+        node-label:
+        ${lib.concatMapStringsSep "\n" (l: "  - ${l}") labelPairs}
+        ''))
+    ];
 
     systemd.services.k3s = lib.mkIf (sopsTokenPath != null && !isBootstrapMaster) {
       after = [ "sops-install-secrets.service" ];

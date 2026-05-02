@@ -9,4 +9,7 @@
   k3s.enable = true;
   k3s.role = "server";
   k3s.nodeIP = "100.101.5.33";
+  k3s.nodeLabels = {
+    "topology.kubernetes.io/zone" = "home";
+  };
 }
