@@ -9,6 +9,9 @@
   k3s.enable = true;
   k3s.role = "agent";
   k3s.nodeIP = "100.86.214.46";
+  k3s.nodeLabels = {
+    "topology.kubernetes.io/zone" = "alt";
+  };
 
   # Old machine is legacy only boot
   boot.loader = lib.mkForce {

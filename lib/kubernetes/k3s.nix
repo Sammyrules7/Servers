@@ -3,7 +3,6 @@ let
   cfg = config.k3s;
   isBootstrapMaster = config.networking.hostName == "server1";
   sopsTokenPath = config.sops.secrets."k3s-token".path or null;
-  # SOPS token takes precedence over manual tokenFile
   effectiveTokenFile = if sopsTokenPath != null then sopsTokenPath else cfg.tokenFile;
 in {
   options.k3s = with lib; {
@@ -32,12 +31,17 @@ in {
       default = "";
       description = "IP address k3s binds to (usually Tailscale IP)";
     };
+
+    nodeLabels = mkOption {
+      type = types.attrsOf types.str;
+      default = {};
+      description = "Node labels to apply (e.g., topology.kubernetes.io/zone)";
+    };
   };
 
-   config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     services.k3s = {
       enable = true;
-      # Add custom options here
       inherit (cfg) role;
     }
     // lib.optionalAttrs (cfg.nodeIP != "") {
@@ -53,9 +57,19 @@ in {
       clusterInit = true;
     };
 
-    environment.etc."rancher/k3s/config.yaml".text = ''
-      flannel-iface: tailscale0
-    '';
+    environment.etc."rancher/k3s/config.yaml".text = lib.mkMerge [
+      ''
+        flannel-iface: tailscale0
+      ''
+      (lib.optionalString (cfg.nodeLabels != {})
+        (let
+          labelPairs = lib.mapAttrsToList (name: value: "${name}=${value}") cfg.nodeLabels;
+        in ''
+
+        node-label:
+        ${lib.concatMapStringsSep "\n" (l: "  - ${l}") labelPairs}
+        ''))
+    ];
 
     systemd.services.k3s = lib.mkIf (sopsTokenPath != null && !isBootstrapMaster) {
       after = [ "sops-install-secrets.service" ];
