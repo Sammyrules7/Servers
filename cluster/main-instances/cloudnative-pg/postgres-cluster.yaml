@@ -9,8 +9,3 @@ spec:
     size: 1Gi
   monitoring:
     enablePodMonitor: true
-  users:
-    - name: tenant1_user
-  databases:
-    - name: tenant1_db
-      owner: tenant1_user

@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: tenant1-db
+  namespace: tenant1
+spec:
+  cluster:
+    name: tenant1-db
+  name: tenant1_db
+  owner: tenant1_user

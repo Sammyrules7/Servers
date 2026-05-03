@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
   - namespace-tenant1.yaml
   - postgres-cluster.yaml
+  - database.yaml
+  - job.yaml

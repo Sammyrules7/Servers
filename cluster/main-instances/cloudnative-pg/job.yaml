@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tenant1-app-init
+  namespace: tenant1
+spec:
+  template:
+    metadata:
+      # Note: Do not set controller-uid or job-name labels here as they are managed by the Job controller
+      labels:
+        app: tenant1-app-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init
+        image: postgres:15
+        env:
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: tenant1-db-app
+              key: user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tenant1-db-app
+              key: password
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: tenant1-db-app
+              key: dbname
+        - name: PGHOST
+          value: tenant1-db-rw.tenant1.svc.cluster.local
+        - name: PGPORT
+          value: "5432"
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            # Wait for the database to be ready
+            until pg_isready -h $PGHOST -p $PGPORT -U $PGUSER; do
+              echo "Waiting for database to be ready..."
+              sleep 2
+            done
+
+            # Connect to the database and create a table and insert a row
+            psql -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE -c "
+            CREATE TABLE IF NOT EXISTS example (id SERIAL PRIMARY KEY, message TEXT);
+            INSERT INTO example (message) VALUES ('Hello from tenant1 application!');
+            "
+      volumes: []
