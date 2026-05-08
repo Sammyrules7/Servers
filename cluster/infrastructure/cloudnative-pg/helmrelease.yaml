@@ -13,6 +13,10 @@ metadata:
   name: cloudnative-pg
   namespace: cnpg-system
 spec:
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   interval: 15m0s
   targetNamespace: cnpg-system
   chart:

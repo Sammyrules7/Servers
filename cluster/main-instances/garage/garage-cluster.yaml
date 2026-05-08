@@ -1,4 +1,4 @@
-apiVersion: garage.rajsingh.info/v1alpha1
+apiVersion: garage.rajsingh.info/v1beta1
 kind: GarageCluster
 metadata:
   name: garage-main-cluster
@@ -15,3 +15,7 @@ spec:
     data:
       size: 10Gi
       storageClassName: local-path
+  admin:
+    adminTokenSecretRef:
+      name: garage-admin-token
+      key: admin-token

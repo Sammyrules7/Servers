@@ -14,10 +14,14 @@ metadata:
   name: garage-operator
   namespace: garage-system
 spec:
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   chart:
     spec:
       chart: garage-operator
-      version: "0.3.x"
+      version: "0.4.x"
       sourceRef:
         kind: HelmRepository
         name: garage-operator

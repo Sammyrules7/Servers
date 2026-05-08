@@ -5,3 +5,4 @@ resources:
   - garage-cluster.yaml
   - namespace.yaml
   - vmscrape.yaml
+  - garage-token.yaml
