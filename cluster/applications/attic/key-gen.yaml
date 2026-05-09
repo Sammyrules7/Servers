@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: attic-key-generator
+  namespace: atticd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: attic-key-generator-role
+  namespace: atticd
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: attic-key-generator-binding
+  namespace: atticd
+subjects:
+  - kind: ServiceAccount
+    name: attic-key-generator
+    namespace: atticd
+roleRef:
+  kind: Role
+  name: attic-key-generator-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: attic-secret-bootstrap
+  namespace: atticd
+spec:
+  template:
+    spec:
+      serviceAccountName: attic-key-generator
+      restartPolicy: OnFailure
+      containers:
+        - name: generator
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              SECRET_NAME="attic-jwt-secret"
+              ENV_KEY="ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64"
+
+              if kubectl get secret "$SECRET_NAME" > /dev/null 2>&1; then
+                echo "Secret $SECRET_NAME already exists. Skipping generation."
+                exit 0
+              fi
+
+              VALUE=$(openssl rand -base64 64 | tr -d '\n' | tr -d ' ')
+
+              kubectl create secret generic "$SECRET_NAME" \
+                --from-literal="$ENV_KEY"="$VALUE"
+
+              echo "Successfully bootstrapped $SECRET_NAME with HS256 key."

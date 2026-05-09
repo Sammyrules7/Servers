@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: attic-gc
+  namespace: atticd
+spec:
+  schedule: "0 0 * * *" # Midnight
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: attic
+              image: ghcr.io/zhaofengli/attic:latest
+              args:
+                - "--mode"
+                - "garbage-collector-once"
+                - "-f"
+                - "/etc/attic/config.toml"
+              volumeMounts:
+                - name: config-volume
+                  mountPath: /etc/attic
+              envFrom:
+                - secretRef:
+                    name: attic-s3
+                - secretRef:
+                    name: attic-jwt-secret
+          restartPolicy: OnFailure
+          volumes:
+            - name: config-volume
+              configMap:
+                name: attic-config

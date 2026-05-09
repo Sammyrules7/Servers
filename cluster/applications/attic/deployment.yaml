@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attic
+  namespace: atticd
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: attic
+  template:
+    metadata:
+      labels:
+        app: attic
+    spec:
+      initContainers:
+        - name: attic-migrations
+          image: ghcr.io/zhaofengli/attic:latest
+          args:
+            - "--mode"
+            - "db-migrations"
+            - "-f"
+            - "/etc/attic/config.toml"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/attic
+          envFrom:
+            - secretRef:
+                name: attic-s3
+            - secretRef:
+                name: attic-jwt-secret
+      containers:
+        - name: attic
+          image: ghcr.io/zhaofengli/attic:latest
+          args:
+            - "--mode"
+            - "api-server"
+            - "-f"
+            - "/etc/attic/config.toml"
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/attic
+          envFrom:
+            - secretRef:
+                name: attic-s3
+            - secretRef:
+                name: attic-jwt-secret
+      volumes:
+        - name: config-volume
+          configMap:
+            name: attic-config

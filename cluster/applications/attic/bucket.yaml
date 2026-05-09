@@ -1,0 +1,9 @@
+apiVersion: garage.rajsingh.info/v1beta1
+kind: GarageBucket
+metadata:
+  name: attic-bucket
+  namespace: atticd
+spec:
+  clusterRef:
+    name: garage-main-cluster
+    namespace: garage-cluster

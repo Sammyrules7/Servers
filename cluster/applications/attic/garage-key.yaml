@@ -1,0 +1,27 @@
+apiVersion: garage.rajsingh.info/v1beta1
+kind: GarageKey
+metadata:
+  name: attic-key
+  namespace: atticd
+spec:
+  clusterRef:
+    name: garage-main-cluster
+    namespace: garage-cluster
+  name: attic-key
+
+  secretTemplate:
+    name: attic-s3
+    accessKeyIdKey: AWS_ACCESS_KEY_ID
+    secretAccessKeyKey: AWS_SECRET_ACCESS_KEY
+    endpointKey: S3_ENDPOINT
+    regionKey: AWS_REGION
+    hostKey: S3_HOST
+    schemeKey: S3_SCHEME
+    includeEndpoint: true
+    includeRegion: true
+
+  bucketPermissions:
+    - bucketRef:
+        name: attic-bucket
+      read: true
+      write: true

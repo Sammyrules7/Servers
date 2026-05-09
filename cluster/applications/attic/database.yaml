@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: ephemeral
+  namespace: postgres
+spec:
+  name: ephemeral
+  cluster:
+    name: postgres
+  owner: ephemeral
