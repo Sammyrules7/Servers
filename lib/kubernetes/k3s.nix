@@ -57,6 +57,9 @@ in {
     }
     // lib.optionalAttrs isBootstrapMaster {
       clusterInit = true;
+    }
+    // lib.optionalAttrs (cfg.role == "server") {
+      disable = [ "traefik" ];
     };
 
     environment.etc."rancher/k3s/config.yaml".text = lib.mkMerge [

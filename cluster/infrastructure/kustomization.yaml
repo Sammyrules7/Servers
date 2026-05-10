@@ -5,3 +5,4 @@ resources:
   - ./victoria-metrics
   - ./cloudnative-pg
   - ./garage
+  - ./ingress
