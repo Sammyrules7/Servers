@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: longhorn-system
 resources:
   - namespace.yaml
+  - ingress.yaml
   - longhorn-helmrelease.yaml
   - longhorn-servicemonitor.yaml
   - longhorn-dashboard-configmap.yaml

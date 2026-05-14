@@ -32,6 +32,8 @@ spec:
     providers:
       kubernetesGateway:
         enabled: true
+      kubernetesCRD:
+        allowCrossNamespace: true
     gateway:
       enabled: false
     metrics:
@@ -41,3 +43,9 @@ spec:
           enabled: true
         addRoutersLabels: true
         addServicesLabels: true
+    ingressRoute:
+      dashboard:
+        enabled: true
+        matchRule: Host(`server2`)
+        entryPoints:
+          - web

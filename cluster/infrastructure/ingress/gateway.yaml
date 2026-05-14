@@ -12,14 +12,14 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-    - name: websecure
-      port: 8443
-      protocol: HTTPS
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: gateway-fun-cert
-            namespace: default
-      allowedRoutes:
-        namespaces:
-          from: All
+    #- name: websecure
+    #  port: 8443
+    #  protocol: HTTPS
+    #  tls:
+    #    mode: Terminate
+    #    certificateRefs:
+    #      - name: gateway-fun-cert
+    #        namespace: default
+    #  allowedRoutes:
+    #    namespaces:
+    #      from: All

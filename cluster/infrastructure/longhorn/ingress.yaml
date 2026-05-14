@@ -1,0 +1,36 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: ingress
+  hostnames:
+    - "longhorn.maio-tech.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: auth
+      backendRefs:
+        - name: longhorn-frontend
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: auth
+  namespace: longhorn-system
+spec:
+  chain:
+    middlewares:
+      - name: basic-auth
+        namespace: ingress
