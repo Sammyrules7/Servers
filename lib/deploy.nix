@@ -10,7 +10,7 @@
         "-o" "StrictHostKeyChecking=no"
       ];
       magicRollback = false;
-      remoteBuild = true;
+      remoteBuild = false;
       profiles.system = {
         user = "root";
         sshUser = "deploy";
