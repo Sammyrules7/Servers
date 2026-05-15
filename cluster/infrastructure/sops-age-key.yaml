@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sops-keygen-sa
+  namespace: flux-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sops-keygen-role
+  namespace: flux-system
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "create"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sops-keygen-role-binding
+  namespace: flux-system
+subjects:
+  - kind: ServiceAccount
+    name: sops-keygen-sa
+    namespace: flux-system
+roleRef:
+  kind: Role
+  name: sops-keygen-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sops-age-keygen
+  namespace: flux-system
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: sops-keygen-sa
+      containers:
+        - name: sops-age-keygen
+          image: alpine:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache age kubectl
+
+              # Generate keys in /tmp
+              AGE_KEYGEN_OUTPUT=$(age-keygen)
+              echo "$AGE_KEYGEN_OUTPUT" | grep "AGE-SECRET-KEY-" > /tmp/age.agekey
+
+              # Extract Public Key (the line starting with # public key:)
+              PUBKEY=$(echo "$AGE_KEYGEN_OUTPUT" | grep "# public key:" | awk '{print $4}')
+
+              SET_NAMESPACE=flux-system
+              KEY_NAME=sops-age-key
+
+              # Create ConfigMap for public key (for user reference)
+              if ! kubectl get configmap $KEY_NAME -n $SET_NAMESPACE > /dev/null 2>&1; then
+                kubectl create configmap $KEY_NAME -n $SET_NAMESPACE --from-literal=pubkey=$PUBKEY
+              else
+                echo "ConfigMap $KEY_NAME already exists"
+              fi
+
+              # Create Secret for private key (for Flux/SOPS)
+              if ! kubectl get secret $KEY_NAME -n $SET_NAMESPACE > /dev/null 2>&1; then
+                kubectl create secret generic $KEY_NAME -n $SET_NAMESPACE --from-file=age.agekey=/tmp/age.agekey
+              else
+                echo "Secret $KEY_NAME already exists"
+              fi
