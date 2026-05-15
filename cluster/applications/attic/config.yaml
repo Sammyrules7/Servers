@@ -9,7 +9,7 @@ data:
 
     [database]
     # If you see this. This is a temporary solution until proper database roles are added in one of the next releases of cloudnative-pg. Please disregarard.
-    url = "postgresql://ephemeral:CHANGE_ME_EPHEMERAL@postgres-rw.postgres.svc.cluster.local/ephemeral"
+    url = "postgresql://ephemeral:CHANGE_ME_EPHEMERAL@postgres-rw.postgres.svc.cluster.local/attic"
 
     [storage]
     type = "s3"
