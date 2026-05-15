@@ -3,3 +3,6 @@
  `kubectl create secret generic auth-secret \
   -n ingress \
   --from-literal=users="sammy:$(nix-shell -p whois --run "mkpasswd -m bcrypt 'yourpassword'")"`
+
+
+### This should be managed by sops

@@ -1,0 +1,46 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway
+  namespace: ingress
+  annotations:
+    cert-manager.io/issuer: cf-origin-issuer
+    cert-manager.io/issuer-kind: ClusterOriginIssuer
+    cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: web
+      port: 8000
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: websecure-tld
+      port: 8443
+      protocol: HTTPS
+      hostname: "maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: tld-cert
+            kind: Secret
+            group: core
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: websecure-sub
+      port: 8443
+      protocol: HTTPS
+      hostname: "*.maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: sub-domain
+            kind: Secret
+            group: core
+      allowedRoutes:
+        namespaces:
+          from: All
