@@ -1,0 +1,24 @@
+apiVersion: garage.rajsingh.info/v1beta1
+kind: GarageKey
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  clusterRef:
+    name: garage-main-cluster
+    namespace: garage-cluster
+  name: forgejo
+
+  secretTemplate:
+    name: forgejo-s3-creds
+    accessKeyIdKey: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
+    secretAccessKeyKey: FORGEJO__STORAGE__MINIO_SECRET_ACCESS_KEY
+    regionKey: FORGEJO__STORAGE__MINIO_LOCATION
+    includeEndpoint: false
+    includeRegion: true
+
+  bucketPermissions:
+    - bucketRef:
+        name: forgejo
+      read: true
+      write: true

@@ -1,0 +1,146 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  interval: 15m0s
+  url: oci://code.forgejo.org/forgejo-helm/forgejo
+  type: oci
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  chart:
+    spec:
+      chart: forgejo
+      version: "17.1.x"
+      sourceRef:
+        kind: HelmRepository
+        name: forgejo
+        namespace: forgejo
+  interval: 15m0s
+  values:
+    image:
+      rootless: true
+    service:
+      ssh:
+        type: LoadBalancer
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: gateway
+          namespace: ingress
+      hostnames:
+        - forgejo.maio-tech.com
+      matches:
+        path:
+          type: PathPrefix
+          value: "/"
+
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    replicaCount: 1
+
+    persistence:
+      enabled: true
+      create: true
+      claimName: forgejo
+      size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClass: longhorn
+
+    gitea:
+      admin:
+        existingSecret: forgejo-admin
+
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+
+      config:
+        APP_NAME: "A Forgejo instance from Sammy"
+        APP_SLOGAN: "Hosting some of my shitty OSS"
+        server:
+          #LANDING_PAGE: "explore"
+          ROOT_URL: "https://forgejo.maio-tech.com/"
+          DOMAIN: "git.forgejo.maio-tech.com"
+          SSH_DOMAIN: "git.forgejo.maio-tech.com"
+        storage:
+          STORAGE_TYPE: minio
+          SERVE_DIRECT: false
+          MINIO_ENDPOINT: "garage-main-cluster.garage-cluster.svc.cluster.local:3900"
+          MINIO_BUCKET: "forgejo"
+        service:
+          DISABLE_REGISTRATION: true
+
+        session:
+          PROVIDER: db
+        repository:
+          DEFAULT_BRANCH: "main"
+          DISABLE_HTTP_GIT: false
+
+      additionalConfigSources:
+        - secret:
+            secretName: forgejo-db-creds
+
+      additionalConfigFromEnvs:
+        - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-s3-creds
+              key: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
+
+        - name: FORGEJO__STORAGE__MINIO_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-s3-creds
+              key: FORGEJO__STORAGE__MINIO_SECRET_ACCESS_KEY
+
+        - name: FORGEJO__STORAGE__MINIO_LOCATION
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-s3-creds
+              key: FORGEJO__STORAGE__MINIO_LOCATION
+
+      livenessProbe:
+        enabled: true
+        tcpSocket:
+          port: http
+        initialDelaySeconds: 100
+        timeoutSeconds: 1
+        periodSeconds: 30
+        successThreshold: 1
+        failureThreshold: 10
+
+      readinessProbe:
+        enabled: true
+        httpGet:
+          path: /api/healthz
+          port: http
+        initialDelaySeconds: 5
+        timeoutSeconds: 1
+        periodSeconds: 15
+        successThreshold: 1
+        failureThreshold: 3
+
+      startupProbe:
+        enabled: true
+        tcpSocket:
+          port: http
+        initialDelaySeconds: 5
+        timeoutSeconds: 1
+        periodSeconds: 5
+        successThreshold: 1
+        failureThreshold: 30

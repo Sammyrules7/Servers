@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - admin-secret.enc.yaml
+  - bucket.yaml
+  - garage-key.yaml
+  - database.yaml
+  - db-creds-secret.enc.yaml
+  - forgejo.yaml
