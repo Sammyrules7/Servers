@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - database.yaml
+  - authentik.yaml
+  - authentik-key-secret.enc.yaml
+  - db-secret.enc.yaml

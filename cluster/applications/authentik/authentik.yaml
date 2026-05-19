@@ -1,0 +1,43 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 15m0s
+  url: https://charts.goauthentik.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  chart:
+    spec:
+      chart: authentik
+      version: "2026.2.x"
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: authentik
+  interval: 15m0s
+  valuesFrom:
+    - kind: Secret
+      name: db-creds
+      valuesKey: values.yaml
+    - kind: Secret
+      name: authentik-secret-key
+      valuesKey: values.yaml
+  values:
+    error_reporting:
+      enabled: true
+    server:
+      route:
+        main:
+          enabled: true
+          hostnames:
+            - auth.maio-tech.com
+          parentRefs:
+            - name: gateway
+              namespace: ingress
