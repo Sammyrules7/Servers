@@ -7,7 +7,6 @@ resources:
   - garage-key.yaml
   - key-gen.yaml
   - config.yaml
-  - service.yaml
   - deployment.yaml
   - hpa.yaml
   - gc-job.yaml

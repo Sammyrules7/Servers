@@ -83,10 +83,15 @@ spec:
           MINIO_ENDPOINT: "garage-main-cluster.garage-cluster.svc.cluster.local:3900"
           MINIO_BUCKET: "forgejo"
         service:
-          DISABLE_REGISTRATION: true
-
+          DISABLE_REGISTRATION: false
+          ENABLE_INTERNAL_SIGNIN: "false"
+          ENABLE_BASIC_AUTHENTICATION: "true"
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
         session:
           PROVIDER: db
+        oauth2_client:
+          ENABLE_AUTO_REGISTRATION: true
+          USERNAME: preferred_username
         repository:
           DEFAULT_BRANCH: "main"
           DISABLE_HTTP_GIT: false
@@ -144,3 +149,5 @@ spec:
         periodSeconds: 5
         successThreshold: 1
         failureThreshold: 30
+
+      # If you are looking for Auth/OAuth/Oidc its defined in the ui

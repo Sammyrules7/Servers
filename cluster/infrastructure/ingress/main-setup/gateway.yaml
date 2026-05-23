@@ -11,14 +11,14 @@ spec:
   gatewayClassName: traefik
   listeners:
     - name: web
-      port: 8000
+      port: 80
       protocol: HTTP
       allowedRoutes:
         namespaces:
           from: All
 
     - name: websecure-tld
-      port: 8443
+      port: 443
       protocol: HTTPS
       hostname: "maio-tech.com"
       tls:
@@ -32,7 +32,7 @@ spec:
           from: All
 
     - name: websecure-sub
-      port: 8443
+      port: 443
       protocol: HTTPS
       hostname: "*.maio-tech.com"
       tls:

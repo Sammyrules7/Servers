@@ -5,4 +5,5 @@ resources:
   - namespace.yaml
   - vm.yaml
   - ingress.yaml
+  - oauth-secret.enc.yaml
   - ./prometheus-crds
