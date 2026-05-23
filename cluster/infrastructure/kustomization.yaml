@@ -6,4 +6,5 @@ resources:
   - ./cloudnative-pg
   - ./garage
   - ./ingress
+  - ./keda
   - sops-age-key.yaml
