@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: cloudflare-dns-01-token
+    namespace: ingress
+type: Opaque
+stringData:
+    api-token: ENC[AES256_GCM,data:mqzBkIeFE/ive/+/nN2xI3B522/KDMt04Vmj6wnBvTTLvOBPo7eUhyb9N2n5ugorRg4BoZU=,iv:ZzgzF9GCCe0B2dgvnw40HpaFKyt48K+ve44h9XMvQjw=,tag:S7xWn7Kzpwhdn6HxItni5g==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHNzaC1lZDI1NTE5IHEyMURhQSB5dmZq
+            UTNqbFZWT25vSzdJc1M3OHQrRkhiZ24zV09TN0JEVDQwZ0dXS2d3CnlMZjVxa0xq
+            Q1cvNUJzcFE1cm9EZ3Q5cWc5RnpyK3Z3Vk1jd1d6akJONWsKLS0tIE40ODBYelc4
+            UTRDY21BeEpuMnBZWTVuMTczMVRaQlVuUGx6TlpicTJzOVkKgkhnm4q+6vN6YZNb
+            nIdTZiRReuwLsKJmta1KHANywYAqEuAIasS14cUxL5PT544Ad1R4WyJVo3NDrgD/
+            hEHOQQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICBbJZYAoaiso9r80YdbBkqFZ1bggET4EEkzZ9ckBbGW
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHNzaC1lZDI1NTE5IHFodDFMQSBJam4w
+            a1FkVFVqVFNoNG53SW80cVhickhWaG9Iekx3SHJid0IzQlFKS1djCmtYWTYxMnNJ
+            a2duMVJUcTNMRFZFTXNDWW51bHJDWG94aVhWNDFHUVdiTU0KLS0tIGU2RXJIT1hv
+            YWpmVWp4bjBYQXRRYU1Ha2h1SjVMbEovTWlaNXFwT0Z3QVEKyST/1puyRTOAu9uZ
+            4AhtO0W1nRDOYpYlHYF4e1BpRtO1oNpqH2lN0vih/pD6sB0OwbjTZV0rxjS1wpvM
+            gCDF7Q==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvbJQ3KnO165S9pyfQ5qHXFv51cw3LmsvUn6Xo2Bbr7
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwTm14dzIzRVM5Y2ZqbWFJ
+            SGQrcUNlM0cwelcxZTIzRDRqRmVleHY2VXdrCk1zYmZJaEVnSm9SL1FKSE92aEQ0
+            V2F6eStxcUpNQmYzWlVTZlFMSFJiUFUKLS0tIEtJdjVlODBpeTA4VUlvZmFucmF4
+            THRZZUI4NXhyTVY4dmV6dnArd1cydDAKd0epkLcYYvivZVaekFHBSgNsXlVT/Z+F
+            SFknhXqJJb6kBpiFemRHhM4hnuhkeu0LxJFxfnngO+LnW4smyIHPHQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1mnacljduxclddus4xa83h079w0yqz94h22kxwxjqj26vu6fg2ckqc3gymn
+    encrypted_regex: ^(data|stringData|password|token|secret)$
+    lastmodified: "2026-05-24T22:25:16Z"
+    mac: ENC[AES256_GCM,data:Tllc26kLGJ/ApnFBYrIKkSopc8BADj7lIJnFYFLvJflIr8kV30lwbk4M0k/+9q9yvsaBjV0rbEF7kxqb0Vfp+fYdo9bqVcfr2Y+rN9K92Bvf//uuo88C11G/GAgSmoTnGmAiz1cdLEUWls1GY/AFeRLm8Y4ITpTD2dOvrHalOJ0=,iv:29uVaOvQZgJhJUSm9TwA9wbLzzUMFM4sBtMEqC1KwSM=,tag:mQ4Usdv0+YJrPfFoc2x4jg==,type:str]
+    version: 3.13.0

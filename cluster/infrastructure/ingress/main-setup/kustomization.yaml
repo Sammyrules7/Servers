@@ -8,3 +8,5 @@ resources:
   - cloudflare-token.enc.yaml
   - CFTLStraefik.yaml
   - cloudflare-public.yaml
+  - lets-encrypt-Cissuer.yaml
+  - cfapi-dns-01-token.enc.yaml
