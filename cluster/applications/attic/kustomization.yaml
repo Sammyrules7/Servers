@@ -10,3 +10,4 @@ resources:
   - deployment.yaml
   - hpa.yaml
   - gc-job.yaml
+  - ingress.yaml

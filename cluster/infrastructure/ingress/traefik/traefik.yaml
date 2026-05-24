@@ -56,8 +56,6 @@ spec:
         entryPoints:
           - web
     ports:
-      web:
-        port: 80
       websecure:
         port: 443
         forwardedHeaders:

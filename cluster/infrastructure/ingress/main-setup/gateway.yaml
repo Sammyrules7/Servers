@@ -4,19 +4,10 @@ metadata:
   name: gateway
   namespace: ingress
   annotations:
-    cert-manager.io/issuer: cf-origin-issuer
-    cert-manager.io/issuer-kind: ClusterOriginIssuer
-    cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+    traefik.ingress.kubernetes.io/router.tls.options: ingress-attic-no-mtls@kubernetescrd
 spec:
   gatewayClassName: traefik
   listeners:
-    - name: web
-      port: 80
-      protocol: HTTP
-      allowedRoutes:
-        namespaces:
-          from: All
-
     - name: websecure-tld
       port: 443
       protocol: HTTPS
@@ -25,8 +16,10 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: tld-cert
-            kind: Secret
-            group: core
+        options:
+          cert-manager.io/issuer: cf-origin-issuer
+          cert-manager.io/issuer-kind: ClusterOriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
       allowedRoutes:
         namespaces:
           from: All
@@ -39,8 +32,25 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: sub-domain
-            kind: Secret
-            group: core
+        options:
+          cert-manager.io/issuer: cf-origin-issuer
+          cert-manager.io/issuer-kind: ClusterOriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: websecure-attic
+      port: 443
+      protocol: HTTPS
+      hostname: "attic.maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: attic-letsencrypt-cert
+        options:
+          cert-manager.io/issuer: lets-encrypt-issuer
+          cert-manager.io/issuer-kind: Issuer
       allowedRoutes:
         namespaces:
           from: All

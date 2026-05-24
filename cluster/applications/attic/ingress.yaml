@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: attic
+  namespace: atticd
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: ingress
+  hostnames:
+    - "attic.maio-tech.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: atticd-http
+          port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atticd-http
+  namespace: atticd
+spec:
+  selector:
+    app.kubernetes.io/name: attic
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

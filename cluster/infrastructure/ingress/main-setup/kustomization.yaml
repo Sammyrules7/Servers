@@ -7,6 +7,7 @@ resources:
   - cloudflare-issuer.yaml
   - cloudflare-token.enc.yaml
   - CFTLStraefik.yaml
+  - ingress-attic-no-mtls.yaml
   - cloudflare-public.yaml
   - lets-encrypt-Cissuer.yaml
   - cfapi-dns-01-token.enc.yaml
