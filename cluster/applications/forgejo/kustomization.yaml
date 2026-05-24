@@ -8,3 +8,5 @@ resources:
   - database.yaml
   - db-creds-secret.enc.yaml
   - forgejo.yaml
+  - runners.yaml
+  - runner-reg-secret.enc.yaml
