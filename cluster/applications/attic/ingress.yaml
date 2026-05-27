@@ -28,7 +28,7 @@ metadata:
   namespace: atticd
 spec:
   selector:
-    app.kubernetes.io/name: attic
+    app: attic
   ports:
     - protocol: TCP
       port: 80
