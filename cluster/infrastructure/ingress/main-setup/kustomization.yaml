@@ -2,12 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
+  - cluster.yaml
   - gateway.yaml
-  - basic-auth.yaml
-  - cloudflare-issuer.yaml
-  - cloudflare-token.enc.yaml
-  - CFTLStraefik.yaml
-  - ingress-attic-no-mtls.yaml
-  - cloudflare-public.yaml
+  - gatewayClass.yaml
+  - ./CF-mTLS
   - lets-encrypt-Cissuer.yaml
-  - cfapi-dns-01-token.enc.yaml

@@ -3,10 +3,13 @@ kind: Gateway
 metadata:
   name: gateway
   namespace: ingress
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls.options: ingress-attic-no-mtls@kubernetescrd
 spec:
-  gatewayClassName: traefik
+  gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: envoy
   listeners:
     - name: websecure-tld
       port: 443

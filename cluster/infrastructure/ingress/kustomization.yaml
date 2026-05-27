@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
   - ./main-setup
-  - ./traefik
+  - ./envoy
   - ./cert-manager
   - ./cloudflare-origin-certs

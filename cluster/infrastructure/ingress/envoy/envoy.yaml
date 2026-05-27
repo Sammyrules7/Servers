@@ -1,0 +1,34 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: envoy
+  namespace: envoy
+spec:
+  interval: 1h
+  url: oci://docker.io/envoyproxy
+  type: oci
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy
+  namespace: envoy
+spec:
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  interval: 15m0s
+  chart:
+    spec:
+      chart: gateway-helm
+      version: "1.7.x"
+      sourceRef:
+        kind: HelmRepository
+        name: envoy
+        namespace: envoy
+  values:
+    config:
+      envoyGateway:
+        extensionApis:
+          enableEnvoyPatchPolicy: true
