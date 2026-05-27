@@ -23,6 +23,10 @@ spec:
         name: forgejo
         namespace: forgejo
   interval: 15m0s
+  valuesFrom:
+    - kind: Secret
+      name: forgejo-db-creds
+      valuesKey: values.yaml
   values:
     image:
       rootless: true
@@ -60,16 +64,13 @@ spec:
         - ReadWriteOnce
       storageClass: longhorn
 
-    gitea:
-      admin:
-        existingSecret: forgejo-admin
-
       metrics:
         enabled: true
         serviceMonitor:
           enabled: true
 
       config:
+        existingSecret: forgejo-admin
         APP_NAME: "A Forgejo instance from Sammy"
         APP_SLOGAN: "Hosting some of my shitty OSS"
         server:
@@ -88,17 +89,15 @@ spec:
           ENABLE_BASIC_AUTHENTICATION: "true"
           ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
         session:
-          PROVIDER: db
+          PROVIDER: memory
+        cache:
+          ADAPTER: memory
         oauth2_client:
           ENABLE_AUTO_REGISTRATION: true
-          USERNAME: preferred_username
+          USERNAME: nickname
         repository:
           DEFAULT_BRANCH: "main"
           DISABLE_HTTP_GIT: false
-
-      additionalConfigSources:
-        - secret:
-            secretName: forgejo-db-creds
 
       additionalConfigFromEnvs:
         - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID

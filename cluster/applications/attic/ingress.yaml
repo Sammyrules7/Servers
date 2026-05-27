@@ -17,6 +17,9 @@ spec:
       backendRefs:
         - name: atticd-http
           port: 80
+          timeouts:
+            request: 15m
+            backendRequest: 15m
 ---
 apiVersion: v1
 kind: Service
