@@ -8,8 +8,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: attic
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 6
+  maxReplicas: 6
   metrics:
     - type: Resource
       resource:
@@ -22,4 +22,17 @@ spec:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 75
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60

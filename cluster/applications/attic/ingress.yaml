@@ -14,12 +14,12 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      timeouts:
+        request: 0s
+        backendRequest: 300s
       backendRefs:
         - name: atticd-http
           port: 80
-          #timeouts:
-          #  request: 15m
-          #  backendRequest: 15m
 ---
 apiVersion: v1
 kind: Service
@@ -27,9 +27,23 @@ metadata:
   name: atticd-http
   namespace: atticd
 spec:
+  clusterIP: None
   selector:
     app: attic
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: attic-traffic-policy
+  namespace: atticd
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: attic
+  loadBalancer:
+    type: LeastRequest
