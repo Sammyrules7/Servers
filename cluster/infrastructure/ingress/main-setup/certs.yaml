@@ -1,0 +1,53 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tld-cert
+  namespace: ingress
+spec:
+  secretName: tld-cert
+  dnsNames:
+    - "maio-tech.com"
+  issuerRef:
+    name: cf-origin-issuer
+    kind: ClusterOriginIssuer
+    group: cert-manager.k8s.cloudflare.com
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sub-domain
+  namespace: ingress
+spec:
+  secretName: sub-domain
+  dnsNames:
+    - "*.maio-tech.com"
+  issuerRef:
+    name: cf-origin-issuer
+    kind: ClusterOriginIssuer
+    group: cert-manager.k8s.cloudflare.com
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: attic-letsencrypt-cert
+  namespace: ingress
+spec:
+  secretName: attic-letsencrypt-cert
+  dnsNames:
+    - "attic.maio-tech.com"
+  issuerRef:
+    name: lets-encrypt-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: s3-letsencrypt-cert
+  namespace: ingress
+spec:
+  secretName: s3-letsencrypt-cert
+  dnsNames:
+    - "*.svc.maio-tech.com"
+  issuerRef:
+    name: lets-encrypt-issuer
+    kind: Issuer

@@ -19,10 +19,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: tld-cert
-        options:
-          cert-manager.io/issuer: cf-origin-issuer
-          cert-manager.io/issuer-kind: ClusterOriginIssuer
-          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
       allowedRoutes:
         namespaces:
           from: All
@@ -35,10 +31,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: sub-domain
-        options:
-          cert-manager.io/issuer: cf-origin-issuer
-          cert-manager.io/issuer-kind: ClusterOriginIssuer
-          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
       allowedRoutes:
         namespaces:
           from: All
@@ -51,9 +43,18 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: attic-letsencrypt-cert
-        options:
-          cert-manager.io/issuer: lets-encrypt-issuer
-          cert-manager.io/issuer-kind: Issuer
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: websecure-svc
+      port: 443
+      protocol: HTTPS
+      hostname: "*.svc.maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: s3-letsencrypt-cert
       allowedRoutes:
         namespaces:
           from: All

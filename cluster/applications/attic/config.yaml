@@ -6,6 +6,7 @@ metadata:
 data:
   config.toml: |-
     listen = "[::]:8080"
+    api-endpoint = "https://attic.maio-tech.com/"
 
     [database]
     # If you see this. This is a temporary solution until proper database roles are added in one of the next releases of cloudnative-pg. Please disregarard.
@@ -15,7 +16,7 @@ data:
     type = "s3"
     region = "garage"
     bucket = "attic-bucket"
-    endpoint = "http://garage-main-cluster.garage-cluster.svc.cluster.local:3900"
+    endpoint = "https://s3.svc.maio-tech.com/"
 
 
     [chunking]
