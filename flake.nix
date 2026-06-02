@@ -1,6 +1,15 @@
 {
   description = "NixOS cluster configuration";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://attic.maio-tech.com/main"
+    ];
+    extra-trusted-public-keys = [
+      "main:arW6XEJpG5vVm3SeAKZ4gohKH6xAKRN2E02iz6vgbXE="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
@@ -10,20 +19,22 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    nixpkgs-stable,
-    deploy-rs,
-    sops-nix,
-    ...
-  }:
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixpkgs-stable,
+      deploy-rs,
+      sops-nix,
+      ...
+    }:
     let
       deployModule = import ./lib/deploy.nix { inherit deploy-rs self; };
       commonModules = [
         sops-nix.nixosModules.sops
       ];
-    in {
+    in
+    {
       nixosConfigurations = {
         server1 = nixpkgs.lib.nixosSystem {
           modules = commonModules ++ [ ./hosts/server1 ];
