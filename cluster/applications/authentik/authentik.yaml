@@ -32,12 +32,3 @@ spec:
   values:
     error_reporting:
       enabled: true
-    server:
-      route:
-        main:
-          enabled: true
-          hostnames:
-            - auth.maio-tech.com
-          parentRefs:
-            - name: gateway
-              namespace: ingress

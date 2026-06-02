@@ -6,3 +6,4 @@ resources:
   - authentik.yaml
   - authentik-key-secret.enc.yaml
   - db-secret.enc.yaml
+  - ingress.yaml
