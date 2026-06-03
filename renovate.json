@@ -1,3 +1,35 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "nix": {
+    "enabled": true
+  },
+  "flux": {
+    "fileMatch": [
+      "(^|/)cluster/.+\\.yaml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)cluster/.+\\.yaml$"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "nix"
+      ],
+      "separateMinorPatch": false,
+      "groupName": "Nix Flake dependencies"
+    },
+    {
+      "matchManagers": [
+        "flux",
+        "kubernetes"
+      ],
+      "groupName": "Kubernetes infrastructure updates"
+    }
+  ]
 }
