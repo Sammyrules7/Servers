@@ -69,8 +69,10 @@ spec:
         serviceMonitor:
           enabled: true
 
-      config:
+    gitea:
+      admin:
         existingSecret: forgejo-admin
+      config:
         APP_NAME: "A Forgejo instance from Sammy"
         APP_SLOGAN: "Hosting some of my shitty OSS"
         server:
@@ -80,16 +82,17 @@ spec:
           SSH_DOMAIN: "git.forgejo.maio-tech.com"
         storage:
           STORAGE_TYPE: minio
-          SERVE_DIRECT: false
-          MINIO_ENDPOINT: "garage-main-cluster.garage-cluster.svc.cluster.local:3900"
+          SERVE_DIRECT: true
+          MINIO_ENDPOINT: "s3.svc.maio-tech.com:443"
           MINIO_BUCKET: "forgejo"
+          MINIO_USE_SSL: true
         service:
           DISABLE_REGISTRATION: false
           ENABLE_INTERNAL_SIGNIN: "false"
           ENABLE_BASIC_AUTHENTICATION: "true"
           ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
         session:
-          PROVIDER: memory
+          PROVIDER: file
         cache:
           ADAPTER: memory
         oauth2_client:
@@ -98,6 +101,7 @@ spec:
         repository:
           DEFAULT_BRANCH: "main"
           DISABLE_HTTP_GIT: false
+        lfs:
 
       additionalConfigFromEnvs:
         - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
