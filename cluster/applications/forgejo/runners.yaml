@@ -53,13 +53,13 @@ spec:
               - env:
                   - name: DEBIAN_FRONTEND
                     value: noninteractive
-                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:4288050ddd71ac2e5f42465c474aec8b838792dec85bb284405db7c180138580
+                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04
                 imagePullPolicy: IfNotPresent
                 name: main
                 resources:
-                  limits:
-                    cpu: 500m
-                    memory: 2Gi
+                  #limits:
+                  #  cpu: 500m
+                  #  memory: 2Gi
                   requests:
                     cpu: 100m
                     memory: 256Mi
@@ -81,7 +81,7 @@ spec:
           runner:
             image:
               repository: git.erwanleboucher.dev/eleboucher/runner
-              tag: sha-63d5504927ba6b9d511c0972beaf4ff5b3705f82
+              tag: 12.10.2
             command:
               - sh
               - -ec
@@ -106,7 +106,7 @@ spec:
           k8s-plugin:
             image:
               repository: git.erwanleboucher.dev/eleboucher/runner-k8s-plugin
-              tag: sha-f7ab06b75887e5497c9f9f9bef641aafb2ae3e1c
+              tag: 12.10.4
             args:
               - --listen
               - unix:///plugin/forgejo-runner-k8s.sock
@@ -129,30 +129,38 @@ spec:
           type: Role
           rules:
             - apiGroups:
-                - ""
+                - "batch"
               resources:
-                - "pods"
+                - jobs
               verbs:
-                - "list"
-                - "watch"
-                - "create"
-                - "get"
-                - "delete"
+                - create
+                - get
+                - list
+                - watch
+                - delete
             - apiGroups:
                 - ""
               resources:
-                - "pods/exec"
+                - pods
               verbs:
-                - "create"
-                - "get"
+                - list
+                - watch
+                - get
             - apiGroups:
                 - ""
               resources:
-                - "pods/log"
+                - pods/exec
               verbs:
-                - "list"
-                - "watch"
-                - "get"
+                - create
+                - get
+            - apiGroups:
+                - ""
+              resources:
+                - pods/log
+              verbs:
+                - list
+                - watch
+                - get
       bindings:
         forgejo-runner:
           type: RoleBinding
