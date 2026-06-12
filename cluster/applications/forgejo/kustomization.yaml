@@ -10,4 +10,6 @@ resources:
   - forgejo.yaml
   - runners.yaml
   - runner-reg-secret.enc.yaml
+  - ingress.yaml
+  - dashboard.yaml
   - ./renovate

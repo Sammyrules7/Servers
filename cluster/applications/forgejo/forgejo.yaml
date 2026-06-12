@@ -5,7 +5,7 @@ metadata:
   namespace: forgejo
 spec:
   interval: 15m0s
-  url: oci://code.forgejo.org/forgejo-helm/forgejo
+  url: oci://code.forgejo.org/forgejo-helm
   type: oci
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -33,17 +33,6 @@ spec:
     service:
       ssh:
         type: LoadBalancer
-    httpRoute:
-      enabled: true
-      parentRefs:
-        - name: gateway
-          namespace: ingress
-      hostnames:
-        - forgejo.maio-tech.com
-      matches:
-        path:
-          type: PathPrefix
-          value: "/"
 
     resources: {}
       # limits:
@@ -64,12 +53,11 @@ spec:
         - ReadWriteOnce
       storageClass: longhorn
 
+    gitea:
       metrics:
         enabled: true
         serviceMonitor:
           enabled: true
-
-    gitea:
       admin:
         existingSecret: forgejo-admin
       config:
@@ -102,7 +90,10 @@ spec:
         repository:
           DEFAULT_BRANCH: "main"
           DISABLE_HTTP_GIT: false
-        lfs:
+        metrics:
+          ENABLED: true
+          ENABLED_ISSUE_BY_LABEL: true
+          ENABLED_ISSUE_BY_REPOSITORY: true
 
       additionalConfigFromEnvs:
         - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
