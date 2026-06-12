@@ -21,9 +21,9 @@ data:
 
     [chunking]
     nar-size-threshold = 65536 # chunk files that are 64 KiB or larger
-    min-size = 16384            # 16 KiB
-    avg-size = 65536            # 64 KiB
-    max-size = 262144           # 256 KiB
+    min-size = 65536     # 64 KiB
+    avg-size = 262144    # 256 KiB
+    max-size = 1048576   # 1 MiB
 
     [compression]
     # Can be "none", "brotli", "zstd", or "xz"

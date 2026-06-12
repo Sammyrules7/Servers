@@ -80,9 +80,10 @@ spec:
           ENABLE_BASIC_AUTHENTICATION: false
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
         session:
-          PROVIDER: file
+          PROVIDER: db
         cache:
-          ADAPTER: memory
+          ADAPTER: twoqueue
+          HOST: '{"size":100, "recent_ratio":0.25, "ghost_ratio":0.5}'
         oauth2_client:
           ACCOUNT_LINKING: auto
           ENABLE_AUTO_REGISTRATION: true
@@ -94,6 +95,8 @@ spec:
           ENABLED: true
           ENABLED_ISSUE_BY_LABEL: true
           ENABLED_ISSUE_BY_REPOSITORY: true
+        log:
+          LEVEL: Warn
 
       additionalConfigFromEnvs:
         - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
@@ -114,35 +117,35 @@ spec:
               name: forgejo-s3-creds
               key: FORGEJO__STORAGE__MINIO_LOCATION
 
-      livenessProbe:
-        enabled: true
-        tcpSocket:
-          port: http
-        initialDelaySeconds: 100
-        timeoutSeconds: 1
-        periodSeconds: 30
-        successThreshold: 1
-        failureThreshold: 10
+    livenessProbe:
+      enabled: true
+      tcpSocket:
+        port: http
+      initialDelaySeconds: 100
+      timeoutSeconds: 1
+      periodSeconds: 30
+      successThreshold: 1
+      failureThreshold: 10
 
-      readinessProbe:
-        enabled: true
-        httpGet:
-          path: /api/healthz
-          port: http
-        initialDelaySeconds: 5
-        timeoutSeconds: 1
-        periodSeconds: 15
-        successThreshold: 1
-        failureThreshold: 3
+    readinessProbe:
+      enabled: true
+      httpGet:
+        path: /api/healthz
+        port: http
+      initialDelaySeconds: 5
+      timeoutSeconds: 1
+      periodSeconds: 15
+      successThreshold: 1
+      failureThreshold: 3
 
-      startupProbe:
-        enabled: true
-        tcpSocket:
-          port: http
-        initialDelaySeconds: 5
-        timeoutSeconds: 1
-        periodSeconds: 5
-        successThreshold: 1
-        failureThreshold: 30
+    startupProbe:
+      enabled: true
+      tcpSocket:
+        port: http
+      initialDelaySeconds: 5
+      timeoutSeconds: 1
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 30
 
       # If you are looking for Auth/OAuth/Oidc its defined in the ui

@@ -31,4 +31,4 @@ spec:
       valuesKey: values.yaml
   values:
     error_reporting:
-      enabled: true
+      enabled: false

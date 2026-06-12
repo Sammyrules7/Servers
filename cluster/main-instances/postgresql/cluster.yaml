@@ -15,10 +15,11 @@ spec:
     roles:
       - name: ephemeral
         login: true
+        superuser: false
         passwordSecret:
           name: postgres-creds
   storage:
     size: 5Gi
-    storageClass: longhorn
+    storageClass: local-path
   monitoring:
     enablePodMonitor: true

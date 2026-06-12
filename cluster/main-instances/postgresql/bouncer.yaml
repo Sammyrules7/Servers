@@ -6,10 +6,28 @@ metadata:
 spec:
   cluster:
     name: postgres
-  instances: 2
+  instances: 4
   type: rw
   pgbouncer:
     poolMode: transaction
     parameters:
       max_client_conn: "1000"
       default_pool_size: "20"
+
+  serviceTemplate:
+    spec:
+      internalTrafficPolicy: Local
+
+  template:
+    spec:
+      containers: []
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: cnpg.io/poolerName
+                    operator: In
+                    values:
+                      - main-rw-postgres-pooler
+              topologyKey: "kubernetes.io/hostname"
