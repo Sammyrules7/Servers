@@ -39,7 +39,7 @@ spec:
         auth.generic_oauth:
           enabled: true
           name: "Authoneer"
-          scopes: "openid email groups"
+          scopes: "openid email groups profile"
           client_id: "$__env{AUTHENTIK_CLIENT_ID}"
           client_secret: "$__env{AUTHENTIK_CLIENT_SECRET}"
           auth_url: https://auth.maio-tech.com/application/o/authorize/

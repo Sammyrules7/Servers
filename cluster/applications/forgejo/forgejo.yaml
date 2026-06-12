@@ -88,14 +88,15 @@ spec:
           MINIO_USE_SSL: true
         service:
           DISABLE_REGISTRATION: false
-          ENABLE_INTERNAL_SIGNIN: "false"
-          ENABLE_BASIC_AUTHENTICATION: "true"
-          ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
+          ENABLE_INTERNAL_SIGNIN: false
+          ENABLE_BASIC_AUTHENTICATION: false
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: true
         session:
           PROVIDER: file
         cache:
           ADAPTER: memory
         oauth2_client:
+          ACCOUNT_LINKING: auto
           ENABLE_AUTO_REGISTRATION: true
           USERNAME: nickname
         repository:
