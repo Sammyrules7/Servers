@@ -7,4 +7,5 @@ resources:
   - ./garage
   - ./ingress
   - ./keda
+  - ./kured
   - sops-age-key.yaml

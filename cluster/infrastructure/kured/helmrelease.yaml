@@ -1,0 +1,37 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: kured
+  namespace: kured
+spec:
+  interval: 15m0s
+  url: https://kubereboot.github.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kured
+  namespace: kured
+spec:
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  chart:
+    spec:
+      chart: kured
+      version: "6.x.x"
+      sourceRef:
+        kind: HelmRepository
+        name: kured
+        namespace: kured
+  interval: 2h
+  values:
+    configuration:
+      rebootSentinel: "/run/reboot-required"
+      useRebootSentinelHostPath: true
+      rebootCommand: "/run/current-system/sw/bin/systemctl reboot"
+      period: 1m
+      lockReleaseDelay: 30s
+      metrics:
+        create: true
