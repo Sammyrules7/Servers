@@ -13,8 +13,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
-    deploy-rs.url = "github:serokell/deploy-rs";
-    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+    colmena.url = "github:zhaofengli/colmena";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -24,38 +23,57 @@
       self,
       nixpkgs,
       nixpkgs-stable,
-      deploy-rs,
+      colmena,
       sops-nix,
       ...
     }:
     let
-      deployModule = import ./lib/deploy.nix { inherit deploy-rs self; };
       commonModules = [
         sops-nix.nixosModules.sops
       ];
     in
     {
-      nixosConfigurations = {
-        server1 = nixpkgs.lib.nixosSystem {
-          modules = commonModules ++ [ ./hosts/server1 ];
+      # Colmena Fleet Configuration
+      colmena = {
+        meta = {
+          nixpkgs = import nixpkgs { system = "x86_64-linux"; };
           specialArgs = { inherit self; };
         };
-        server2 = nixpkgs.lib.nixosSystem {
-          modules = commonModules ++ [ ./hosts/server2 ];
-          specialArgs = { inherit self; };
+
+        server1 = {
+          deployment = {
+            targetHost = "server1";
+            targetUser = "deploy";
+          };
+          imports = commonModules ++ [ ./hosts/server1 ];
         };
-        server3 = nixpkgs.lib.nixosSystem {
-          modules = commonModules ++ [ ./hosts/server3 ];
-          specialArgs = { inherit self; };
+
+        server2 = {
+          deployment = {
+            targetHost = "server2";
+            targetUser = "deploy";
+          };
+          imports = commonModules ++ [ ./hosts/server2 ];
         };
-        server4 = nixpkgs.lib.nixosSystem {
-          modules = commonModules ++ [ ./hosts/server4 ];
-          specialArgs = { inherit self; };
+
+        server3 = {
+          deployment = {
+            targetHost = "server3";
+            targetUser = "deploy";
+          };
+          imports = commonModules ++ [ ./hosts/server3 ];
+        };
+
+        server4 = {
+          deployment = {
+            targetHost = "server4";
+            targetUser = "deploy";
+          };
+          imports = commonModules ++ [ ./hosts/server4 ];
         };
       };
 
-      deploy.nodes = deployModule;
-
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      # Required for modern flake-compatible Colmena deployments
+      colmenaHive = colmena.lib.makeHive self.outputs.colmena;
     };
 }
