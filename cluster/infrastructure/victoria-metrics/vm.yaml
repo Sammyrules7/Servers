@@ -50,6 +50,7 @@ spec:
           name_attribute_name: name
           validate_id_token: true
           use_pkce: true
+          auto_login: true
           role_attribute_path: "contains(groups, 'Grafana Admins') && 'GrafanaAdmin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
           role_attribute_strict: true
           allow_assign_grafana_admin: true
@@ -60,6 +61,11 @@ spec:
           searchNamespace: ALL
         datasources:
           enabled: true
+      deploymentStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 0
     prometheus:
       prometheusSpec:
         serviceMonitorSelectorNilUsesHelmValues: false

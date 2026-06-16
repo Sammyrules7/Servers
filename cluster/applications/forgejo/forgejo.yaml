@@ -68,6 +68,7 @@ spec:
           ROOT_URL: "https://forgejo.maio-tech.com/"
           DOMAIN: "git.forgejo.maio-tech.com"
           SSH_DOMAIN: "git.forgejo.maio-tech.com"
+          LFS_START_SERVER: true
         storage:
           STORAGE_TYPE: minio
           SERVE_DIRECT: true
@@ -91,10 +92,15 @@ spec:
         repository:
           DEFAULT_BRANCH: "main"
           DISABLE_HTTP_GIT: false
+          MAX_CREATION_LIMIT: 0
+          ALLOW_FORK_WITHOUT_MAXIMUM_LIMIT: true
         metrics:
           ENABLED: true
           ENABLED_ISSUE_BY_LABEL: true
           ENABLED_ISSUE_BY_REPOSITORY: true
+        admin:
+          DISABLE_REGULAR_ORG_CREATION: true
+          USER_DISABLED_FEATURES: "deletion, manage_password"
         log:
           LEVEL: Warn
 
@@ -132,9 +138,9 @@ spec:
       httpGet:
         path: /api/healthz
         port: http
-      initialDelaySeconds: 5
+      initialDelaySeconds: 0
       timeoutSeconds: 1
-      periodSeconds: 15
+      periodSeconds: 5
       successThreshold: 1
       failureThreshold: 3
 
@@ -142,10 +148,10 @@ spec:
       enabled: true
       tcpSocket:
         port: http
-      initialDelaySeconds: 5
+      initialDelaySeconds: 1
       timeoutSeconds: 1
-      periodSeconds: 5
+      periodSeconds: 2
       successThreshold: 1
-      failureThreshold: 30
+      failureThreshold: 75
 
       # If you are looking for Auth/OAuth/Oidc its defined in the ui

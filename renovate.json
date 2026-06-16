@@ -29,7 +29,7 @@
         "flux",
         "kubernetes"
       ],
-      "groupName": "Kubernetes infrastructure updates"
+      "groupName": "Kubernetes infrastructure"
     }
   ]
 }
