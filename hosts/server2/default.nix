@@ -1,5 +1,8 @@
-{lib, ...}: {
-  imports = [ ../../lib/base.nix ./hardware.nix ];
+{ lib, ... }: {
+  imports = [
+    ../../lib/base.nix
+    ./hardware.nix
+  ];
 
   nixpkgs.system = "x86_64-linux";
   networking.hostName = "server2";
@@ -11,6 +14,11 @@
   k3s.nodeIP = "100.86.214.46";
   k3s.nodeLabels = {
     "topology.kubernetes.io/zone" = "alt";
+  };
+
+  zramSwap = lib.mkDefault {
+    algorithm = "lz4";
+    memoryPercent = 75;
   };
 
   # Old machine is legacy only boot
