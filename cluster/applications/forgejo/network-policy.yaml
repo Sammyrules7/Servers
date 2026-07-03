@@ -23,6 +23,25 @@ spec:
         - protocol: TCP
           port: 53
 
+      # Forgejo
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: forgejo
+      ports:
+        - protocol: TCP
+          port: 3000
+
+      # Forgejo runner manager
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: forgejo-runner
+      ports:
+        - protocol: TCP
+          port: 42503
+
+      # Allow all exept cluster
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
