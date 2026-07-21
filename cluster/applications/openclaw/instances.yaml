@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/part-of: openclaw
     openclaw.maio-tech.com/owner: sammy
 spec:
+  envFrom:
+    - secretRef:
+        name: sammy-discord
   image:
     repository: ghcr.io/openclaw/openclaw
     tag: "2026.7.1"
@@ -17,6 +20,35 @@ spec:
         defaults:
           model:
             primary: openai/gpt-5.6-terra
+      channels:
+        discord:
+          enabled: true
+          dmPolicy: allowlist
+          allowFrom:
+            - "772830229356871720"
+          groupPolicy: disabled
+      commands:
+        ownerAllowFrom:
+          - "discord:772830229356871720"
+      plugins:
+        allow:
+          - discord
+        entries:
+          discord:
+            enabled: true
+  plugins:
+    - "@openclaw/discord"
+  runtimeDeps:
+    pnpm: true
+    python: true
+  selfConfigure:
+    enabled: true
+    allowedActions:
+      - skills
+      - workspaceFiles
+  gateway:
+    controlUiOrigins:
+      - https://sammy-openclaw.maio-tech.com
   resources:
     requests:
       cpu: 250m
@@ -34,9 +66,19 @@ spec:
   security:
     networkPolicy:
       enabled: true
+      allowedIngressNamespaces:
+        - envoy
   networking:
     service:
       type: ClusterIP
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: gateway
+          namespace: ingress
+          sectionName: websecure-sub
+      hostnames:
+        - sammy-openclaw.maio-tech.com
 ---
 apiVersion: openclaw.rocks/v1alpha1
 kind: OpenClawInstance
@@ -57,6 +99,17 @@ spec:
         defaults:
           model:
             primary: openai/gpt-5.6-luna
+  runtimeDeps:
+    pnpm: true
+    python: true
+  selfConfigure:
+    enabled: true
+    allowedActions:
+      - skills
+      - workspaceFiles
+  gateway:
+    controlUiOrigins:
+      - https://georgie-openclaw.maio-tech.com
   resources:
     requests:
       cpu: 250m
@@ -74,9 +127,19 @@ spec:
   security:
     networkPolicy:
       enabled: true
+      allowedIngressNamespaces:
+        - envoy
   networking:
     service:
       type: ClusterIP
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: gateway
+          namespace: ingress
+          sectionName: websecure-sub
+      hostnames:
+        - georgie-openclaw.maio-tech.com
 ---
 apiVersion: openclaw.rocks/v1alpha1
 kind: OpenClawInstance
@@ -97,6 +160,17 @@ spec:
         defaults:
           model:
             primary: openai/gpt-5.6-luna
+  runtimeDeps:
+    pnpm: true
+    python: true
+  selfConfigure:
+    enabled: true
+    allowedActions:
+      - skills
+      - workspaceFiles
+  gateway:
+    controlUiOrigins:
+      - https://kevin-openclaw.maio-tech.com
   resources:
     requests:
       cpu: 250m
@@ -114,6 +188,16 @@ spec:
   security:
     networkPolicy:
       enabled: true
+      allowedIngressNamespaces:
+        - envoy
   networking:
     service:
       type: ClusterIP
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: gateway
+          namespace: ingress
+          sectionName: websecure-sub
+      hostnames:
+        - kevin-openclaw.maio-tech.com
