@@ -1,0 +1,119 @@
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: sammy
+  namespace: openclaw
+  labels:
+    app.kubernetes.io/part-of: openclaw
+    openclaw.maio-tech.com/owner: sammy
+spec:
+  image:
+    repository: ghcr.io/openclaw/openclaw
+    tag: "2026.7.1"
+    pullPolicy: IfNotPresent
+  config:
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: openai/gpt-5.6-terra
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  storage:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+  security:
+    networkPolicy:
+      enabled: true
+  networking:
+    service:
+      type: ClusterIP
+---
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: georgie
+  namespace: openclaw
+  labels:
+    app.kubernetes.io/part-of: openclaw
+    openclaw.maio-tech.com/owner: georgie
+spec:
+  image:
+    repository: ghcr.io/openclaw/openclaw
+    tag: "2026.7.1"
+    pullPolicy: IfNotPresent
+  config:
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: openai/gpt-5.6-luna
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  storage:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+  security:
+    networkPolicy:
+      enabled: true
+  networking:
+    service:
+      type: ClusterIP
+---
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: kevin
+  namespace: openclaw
+  labels:
+    app.kubernetes.io/part-of: openclaw
+    openclaw.maio-tech.com/owner: kevin
+spec:
+  image:
+    repository: ghcr.io/openclaw/openclaw
+    tag: "2026.7.1"
+    pullPolicy: IfNotPresent
+  config:
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: openai/gpt-5.6-luna
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  storage:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+  security:
+    networkPolicy:
+      enabled: true
+  networking:
+    service:
+      type: ClusterIP
