@@ -1,0 +1,108 @@
+- op: add
+  path: /spec/env
+  value:
+    - name: PATH
+      value: /home/openclaw/.local/bin:/home/openclaw/.openclaw/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+- op: add
+  path: /spec/config/raw/diagnostics
+  value:
+    enabled: true
+    otel:
+      enabled: true
+      endpoint: http://localhost:4318
+      protocol: http/protobuf
+      metrics: true
+      traces: false
+      logs: false
+      flushIntervalMs: 15000
+- op: add
+  path: /spec/sidecarVolumes
+  value:
+    - name: tooling-skills
+      configMap:
+        name: openclaw-tooling-skills
+- op: add
+  path: /spec/initContainers
+  value:
+    - name: install-common-tools
+      image: curlimages/curl:8.16.0
+      imagePullPolicy: IfNotPresent
+      command:
+        - sh
+        - -ec
+      args:
+        - |
+          mkdir -p /data/.local/bin /data/workspace/skills/developer-tooling /tmp/openclaw-tools
+
+          if [ ! -f /data/.local/.jq-1.8.1 ]; then
+            curl -fsSL -o /tmp/openclaw-tools/jq \
+              https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64
+            echo "020468de7539ce70ef1bceaf7cde2e8c4f2ca6c3afb84642aabc5c97d9fc2a0d  /tmp/openclaw-tools/jq" \
+              | sha256sum -c -
+            install -m 0755 /tmp/openclaw-tools/jq /data/.local/bin/jq
+            touch /data/.local/.jq-1.8.1
+          fi
+
+          if [ ! -f /data/.local/.gog-0.34.1 ]; then
+            curl -fsSL -o /tmp/openclaw-tools/gog.tar.gz \
+              https://github.com/steipete/gogcli/releases/download/v0.34.1/gogcli_0.34.1_linux_amd64.tar.gz
+            echo "a5b4be2ea635d4c830972dec1f3a90b0ca17f9c25e7a6353d1e068d8505ea983  /tmp/openclaw-tools/gog.tar.gz" \
+              | sha256sum -c -
+            tar -xzf /tmp/openclaw-tools/gog.tar.gz -C /tmp/openclaw-tools
+            install -m 0755 /tmp/openclaw-tools/gog /data/.local/bin/gog
+            touch /data/.local/.gog-0.34.1
+          fi
+
+          cp /tooling/developer-tooling-SKILL.md \
+            /data/workspace/skills/developer-tooling/SKILL.md
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 25m
+          memory: 32Mi
+        limits:
+          cpu: 250m
+          memory: 128Mi
+      volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: tooling-skills
+          mountPath: /tooling
+          readOnly: true
+    - name: setup-python-pip
+      image: debian:bookworm-slim
+      imagePullPolicy: IfNotPresent
+      command:
+        - sh
+        - -ec
+      args:
+        - |
+          python_target="$(readlink /data/.local/bin/python)"
+          python_bin_dir="$(dirname "${python_target}")"
+          ln -sf "${python_bin_dir}/pip" /data/.local/bin/pip
+          ln -sf "${python_bin_dir}/pip3" /data/.local/bin/pip3
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 25m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      volumeMounts:
+        - name: data
+          mountPath: /data

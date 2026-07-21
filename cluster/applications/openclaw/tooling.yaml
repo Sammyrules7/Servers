@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-tooling-skills
+  namespace: openclaw
+data:
+  developer-tooling-SKILL.md: |
+    ---
+    name: developer-tooling
+    description: Use the persistent Python, JavaScript, shell, JSON, and version-control toolchain installed for this OpenClaw instance.
+    ---
+
+    # Developer tooling
+
+    The following tools are installed in persistent user-space storage:
+
+    - Python 3 with `python`, `python3`, `pip`, and `uv`
+    - Node.js with `node`, `npm`, `npx`, `pnpm`, and `pnpx`
+    - `git`, `curl`, and `jq`
+    - `gog` for Google Workspace
+
+    Install Python libraries with `pip install <package>` or isolated Python
+    applications with `uv tool install <package>`. Install JavaScript tools with
+    `npm install -g <package>` or `pnpm add -g <package>`. These user-space paths
+    are backed by the instance PVC and survive restarts.
+
+    Prefer pinned versions for durable automation. Do not use `sudo`, `apt`, or
+    write to system paths. Never print credentials or include them in commands,
+    logs, generated files, or chat responses.
+  forgejo-SKILL.md: |
+    ---
+    name: forgejo
+    description: Work with Maio Tech Forgejo repositories, issues, pull requests, releases, and Actions through the official tea CLI.
+    ---
+
+    # Forgejo
+
+    Use the official `tea` CLI. The server and token are provided through
+    `GITEA_SERVER_URL` and `GITEA_SERVER_TOKEN`.
+
+    If no login exists, configure it without placing the token on the command
+    line:
+
+    ```sh
+    tea login add --name maio-tech --no-version-check
+    ```
+
+    Use read-only commands freely. Before creating or changing issues, pull
+    requests, releases, branches, comments, workflows, or repository settings,
+    make the intended target and effect clear. Never delete repositories, use
+    admin commands, alter webhooks, or inspect/change Actions secrets unless the
+    user explicitly requests that exact action.
+  m365-SKILL.md: |
+    ---
+    name: microsoft-365-cli
+    description: Work with Microsoft 365 and Microsoft Graph using the official Microsoft 365 CLI.
+    ---
+
+    # Microsoft 365 CLI
+
+    Use `m365` for Outlook, calendars, OneDrive, SharePoint, Teams, To Do, and
+    Microsoft Graph operations. Check authentication with `m365 status`. If
+    needed, start device-code authentication with:
+
+    ```sh
+    m365 login --authType deviceCode
+    ```
+
+    Authentication and CLI configuration are stored under the persistent home
+    directory. Read and search operations are safe defaults. Get explicit
+    confirmation before sending email or chat, creating or changing calendar
+    events, sharing/uploading/deleting files, changing tenant settings, or
+    performing other externally visible mutations. Never expose access tokens,
+    device codes, or authentication output.

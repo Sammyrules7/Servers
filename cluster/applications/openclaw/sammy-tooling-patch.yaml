@@ -1,0 +1,90 @@
+- op: add
+  path: /spec/initContainers/-
+  value:
+    name: install-go
+    image: golang:1.26.5-bookworm
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -ec
+    args:
+      - |
+        mkdir -p /data/.local/bin /data/.local/share /data/.local/share/gopath
+        if [ ! -f /data/.local/.go-1.26.5 ]; then
+          rm -rf /data/.local/share/go
+          cp -a /usr/local/go /data/.local/share/go
+          touch /data/.local/.go-1.26.5
+        fi
+        printf '%s\n' \
+          '#!/bin/sh' \
+          'export GOROOT=/home/openclaw/.local/share/go' \
+          'export GOPATH=/home/openclaw/.local/share/gopath' \
+          'export GOBIN=/home/openclaw/.local/bin' \
+          'exec "$GOROOT/bin/go" "$@"' \
+          > /data/.local/bin/go
+        printf '%s\n' \
+          '#!/bin/sh' \
+          'export GOROOT=/home/openclaw/.local/share/go' \
+          'exec "$GOROOT/bin/gofmt" "$@"' \
+          > /data/.local/bin/gofmt
+        chmod 0755 /data/.local/bin/go /data/.local/bin/gofmt
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 128Mi
+    volumeMounts:
+      - name: data
+        mountPath: /data
+- op: add
+  path: /spec/initContainers/-
+  value:
+    name: install-forgejo-tools
+    image: curlimages/curl:8.16.0
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -ec
+    args:
+      - |
+        mkdir -p /data/.local/bin /data/workspace/skills/forgejo /tmp/forgejo-tools
+        if [ ! -f /data/.local/.tea-0.14.2 ]; then
+          curl -fsSL -o /tmp/forgejo-tools/tea \
+            https://gitea.com/gitea/tea/releases/download/v0.14.2/tea-0.14.2-linux-amd64
+          echo "be4ab135752825ab223cfa87d30e7f328312a24120b70176b67c1bd4aba19cc3  /tmp/forgejo-tools/tea" \
+            | sha256sum -c -
+          install -m 0755 /tmp/forgejo-tools/tea /data/.local/bin/tea
+          touch /data/.local/.tea-0.14.2
+        fi
+        cp /tooling/forgejo-SKILL.md /data/workspace/skills/forgejo/SKILL.md
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 128Mi
+    volumeMounts:
+      - name: data
+        mountPath: /data
+      - name: tooling-skills
+        mountPath: /tooling
+        readOnly: true

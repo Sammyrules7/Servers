@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - forgejo-service.yaml
+  - monitoring.yaml
+  - tooling.yaml
+  - sammy-secrets.enc.yaml
+  - georgie-secrets.enc.yaml
+  - kevin-secrets.enc.yaml
+  - instances.yaml
+patches:
+  - path: tooling-common-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
+  - path: sammy-tooling-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
+      name: sammy
+  - path: m365-tooling-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
+      name: georgie
+  - path: m365-tooling-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
+      name: kevin

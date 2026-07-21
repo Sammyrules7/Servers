@@ -1,0 +1,411 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  namespaceSelector:
+    matchNames:
+      - openclaw
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openclaw
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      relabelConfigs:
+        - sourceLabels:
+            - __meta_kubernetes_service_label_app_kubernetes_io_instance
+          targetLabel: openclaw_instance
+        - targetLabel: job
+          replacement: openclaw
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-dashboard
+  namespace: openclaw
+  labels:
+    grafana_dashboard: "1"
+data:
+  openclaw.json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "OpenClaw agent activity, model usage, latency, errors, queues, and Kubernetes resources.",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "rpm"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (openclaw_instance, openclaw_channel) (rate(openclaw_run_duration_ms_milliseconds_count{openclaw_instance=~\"$instance\"}[$__rate_interval])) * 60",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_channel}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Agent runs per minute",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (openclaw_instance, openclaw_token) (rate(openclaw_tokens_total{openclaw_instance=~\"$instance\",openclaw_token!=\"total\",openclaw_token!=\"prompt\"}[$__rate_interval])) * 60",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_token}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Model tokens per minute",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, openclaw_instance, openclaw_model) (rate(openclaw_model_call_duration_ms_milliseconds_bucket{openclaw_instance=~\"$instance\"}[$__rate_interval]))) / 1000",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_model}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Model request latency p95",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "rpm"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 8
+          },
+          "id": 4,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (openclaw_instance, openclaw_liveness_reason) (rate(openclaw_liveness_warning_total{openclaw_instance=~\"$instance\"}[$__rate_interval])) * 60",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_liveness_reason}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Liveness warnings per minute",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "decimals": 4,
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (openclaw_instance, openclaw_model) (rate(openclaw_cost_usd_total{openclaw_instance=~\"$instance\"}[$__rate_interval])) * 3600",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_model}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Estimated model cost rate (USD/hour)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 16
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, openclaw_instance, openclaw_lane) (rate(openclaw_queue_wait_ms_milliseconds_bucket{openclaw_instance=~\"$instance\"}[$__rate_interval]))) / 1000",
+              "legendFormat": "{{openclaw_instance}} / {{openclaw_lane}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Queue wait p95",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cores"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "id": 7,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"openclaw\",container=\"openclaw\",pod=~\"$instance-.*\"}[$__rate_interval]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ],
+          "title": "OpenClaw container CPU",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 24
+          },
+          "id": 8,
+          "options": {
+            "legend": {
+              "calcs": ["lastNotNull"],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"openclaw\",container=\"openclaw\",pod=~\"$instance-.*\"})",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ],
+          "title": "OpenClaw container memory",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "30s",
+      "schemaVersion": 40,
+      "tags": ["openclaw", "ai", "kubernetes"],
+      "templating": {
+        "list": [
+          {
+            "allValue": "sammy|georgie|kevin",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            },
+            "includeAll": true,
+            "label": "Agent",
+            "multi": true,
+            "name": "instance",
+            "options": [],
+            "query": "sammy,georgie,kevin",
+            "type": "custom"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "OpenClaw Agents",
+      "uid": "openclaw-agents",
+      "version": 1,
+      "weekStart": ""
+    }

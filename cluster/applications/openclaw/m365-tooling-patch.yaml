@@ -1,0 +1,42 @@
+- op: add
+  path: /spec/initContainers/-
+  value:
+    name: install-microsoft365-tools
+    image: node:22-bookworm-slim
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -ec
+    args:
+      - |
+        mkdir -p /data/.local /data/workspace/skills/microsoft-365-cli
+        if [ ! -f /data/.local/.m365-11.9.0 ]; then
+          npm install --global --prefix /data/.local @pnp/cli-microsoft365@11.9.0
+          touch /data/.local/.m365-11.9.0
+        fi
+        cp /tooling/m365-SKILL.md \
+          /data/workspace/skills/microsoft-365-cli/SKILL.md
+    env:
+      - name: NPM_CONFIG_CACHE
+        value: /data/.cache/npm
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    volumeMounts:
+      - name: data
+        mountPath: /data
+      - name: tooling-skills
+        mountPath: /tooling
+        readOnly: true
