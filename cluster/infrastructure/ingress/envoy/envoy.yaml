@@ -17,7 +17,9 @@ spec:
   install:
     crds: CreateReplace
   upgrade:
-    crds: CreateReplace
+    # Gateway API CRDs are managed separately and may be newer than those
+    # bundled with Envoy Gateway.
+    crds: Skip
   interval: 15m0s
   chart:
     spec:
