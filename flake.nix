@@ -52,6 +52,7 @@
           deployment = {
             targetHost = "server2";
             targetUser = "deploy";
+            targetPort = 2222;
           };
           imports = commonModules ++ [ ./hosts/server2 ];
         };

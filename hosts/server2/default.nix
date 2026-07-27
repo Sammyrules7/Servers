@@ -9,6 +9,13 @@
 
   deploy.host = "server2";
 
+  services.openssh.ports = [
+    22
+    2222
+  ];
+  networking.firewall.allowedTCPPorts = [ 2222 ];
+  networking.interfaces.tailscale0.mtu = 1160;
+
   k3s.enable = true;
   k3s.role = "agent";
   k3s.nodeIP = "100.86.214.46";
