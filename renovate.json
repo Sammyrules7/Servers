@@ -3,33 +3,30 @@
   "extends": [
     "config:recommended"
   ],
-  "nix": {
-    "enabled": true
-  },
+  "ignorePaths": [
+    "**/flake.nix",
+    "**/flake.lock"
+  ],
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
   "flux": {
-    "fileMatch": [
-      "(^|/)cluster/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/(^|/)cluster/.+\\.ya?ml$/"
     ]
   },
   "kubernetes": {
-    "fileMatch": [
-      "(^|/)cluster/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/(^|/)cluster/.+\\.ya?ml$/"
     ]
   },
   "packageRules": [
     {
       "matchManagers": [
-        "nix"
-      ],
-      "separateMinorPatch": false,
-      "groupName": "Nix Flake dependencies"
-    },
-    {
-      "matchManagers": [
         "flux",
         "kubernetes"
       ],
-      "groupName": "Kubernetes infrastructure"
+      "groupName": "Kubernetes dependencies"
     }
   ]
 }
