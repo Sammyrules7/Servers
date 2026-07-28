@@ -26,7 +26,7 @@ spec:
               cpu: 100m
               memory: 256Mi
           volumeMounts:
-            - name: config-volume
+            - name: secret-config-volume
               mountPath: /etc/attic
           envFrom:
             - secretRef:
@@ -60,7 +60,7 @@ spec:
               cpu: 100m
               memory: 256Mi
           volumeMounts:
-            - name: config-volume
+            - name: secret-config-volume
               mountPath: /etc/attic
           envFrom:
             - secretRef:
@@ -68,6 +68,6 @@ spec:
             - secretRef:
                 name: attic-jwt-secret
       volumes:
-        - name: config-volume
-          configMap:
-            name: attic-config
+        - name: secret-config-volume
+          secret:
+            secretName: attic-config

@@ -19,7 +19,7 @@ spec:
                 - "-f"
                 - "/etc/attic/config.toml"
               volumeMounts:
-                - name: config-volume
+                - name: secret-config-volume
                   mountPath: /etc/attic
               envFrom:
                 - secretRef:
@@ -28,6 +28,6 @@ spec:
                     name: attic-jwt-secret
           restartPolicy: OnFailure
           volumes:
-            - name: config-volume
-              configMap:
-                name: attic-config
+            - name: secret-config-volume
+              secret:
+                secretName: attic-config

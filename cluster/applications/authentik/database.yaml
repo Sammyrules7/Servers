@@ -1,4 +1,24 @@
 apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: authentik
+  namespace: postgres
+spec:
+  cluster:
+    name: postgres
+  name: authentik
+  comment: Authentik application role
+  login: true
+  superuser: false
+  createdb: false
+  createrole: false
+  replication: false
+  bypassrls: false
+  passwordSecret:
+    name: authentik-db-role
+  databaseRoleReclaimPolicy: retain
+---
+apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: authentik
@@ -7,4 +27,4 @@ spec:
   name: authentik
   cluster:
     name: postgres
-  owner: ephemeral
+  owner: authentik

@@ -5,6 +5,7 @@ resources:
   - admin-secret.enc.yaml
   - bucket.yaml
   - garage-key.yaml
+  - db-role-secret.enc.yaml
   - database.yaml
   - db-creds-secret.enc.yaml
   - forgejo.yaml

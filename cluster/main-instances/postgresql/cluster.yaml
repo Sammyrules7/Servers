@@ -5,6 +5,20 @@ metadata:
   namespace: postgres
 spec:
   instances: 2
+  postgresql:
+    pg_hba:
+      - host attic attic 0.0.0.0/0 scram-sha-256
+      - host all attic 0.0.0.0/0 reject
+      - host attic attic ::/0 scram-sha-256
+      - host all attic ::/0 reject
+      - host authentik authentik 0.0.0.0/0 scram-sha-256
+      - host all authentik 0.0.0.0/0 reject
+      - host authentik authentik ::/0 scram-sha-256
+      - host all authentik ::/0 reject
+      - host forgejo forgejo 0.0.0.0/0 scram-sha-256
+      - host all forgejo 0.0.0.0/0 reject
+      - host forgejo forgejo ::/0 scram-sha-256
+      - host all forgejo ::/0 reject
   bootstrap:
     initdb:
       database: main_db

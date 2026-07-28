@@ -1,4 +1,24 @@
 apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: forgejo
+  namespace: postgres
+spec:
+  cluster:
+    name: postgres
+  name: forgejo
+  comment: Forgejo application role
+  login: true
+  superuser: false
+  createdb: false
+  createrole: false
+  replication: false
+  bypassrls: false
+  passwordSecret:
+    name: forgejo-db-role
+  databaseRoleReclaimPolicy: retain
+---
+apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: forgejo
@@ -7,4 +27,4 @@ spec:
   name: forgejo
   cluster:
     name: postgres
-  owner: ephemeral
+  owner: forgejo
