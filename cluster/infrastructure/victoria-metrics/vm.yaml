@@ -24,6 +24,15 @@ spec:
         name: victoria-metrics
         namespace: metrics
   values:
+    vmsingle:
+      spec:
+        resources:
+          requests:
+            cpu: 150m
+            memory: 768Mi
+          limits:
+            cpu: 1200m
+            memory: 2Gi
     vmagent:
       spec:
         externalLabels:
@@ -31,6 +40,12 @@ spec:
     grafana:
       enabled: true
       envFromSecret: oidc-creds
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          memory: 768Mi
       grafana.ini:
         server:
           root_url: https://grafana.maio-tech.com
@@ -55,6 +70,12 @@ spec:
           role_attribute_strict: true
           allow_assign_grafana_admin: true
       sidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
         dashboards:
           enabled: true
           label: grafana_dashboard

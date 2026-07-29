@@ -5,6 +5,12 @@ metadata:
   namespace: postgres
 spec:
   instances: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
   postgresql:
     pg_hba:
       - host attic attic 0.0.0.0/0 scram-sha-256
