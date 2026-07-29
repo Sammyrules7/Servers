@@ -22,13 +22,14 @@ deployment is ready:
 kubectl exec -n matrix deploy/matrix -c synapse -it -- \
   register_new_matrix_user \
   --config /data/homeserver.yaml \
-  --user sammy \
+  --user matrix-admin-recovery \
   --admin \
   http://127.0.0.1:8008
 ```
 
-The command prompts for a password. Additional accounts can be created the same
-way without `--admin`.
+The command prompts for a password. Keep this local username different from any
+Authentik username so Synapse does not need to link two identities implicitly.
+Additional local accounts can be created the same way without `--admin`.
 
 ## Authentik SSO
 
