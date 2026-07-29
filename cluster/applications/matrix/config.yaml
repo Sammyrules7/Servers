@@ -61,6 +61,24 @@ data:
       enabled: true
       localdb_enabled: true
 
+    oidc_providers:
+      - idp_id: authentik
+        idp_name: Authentik
+        discover: true
+        issuer: "https://auth.maio-tech.com/application/o/matrix/"
+        client_id: replaced-by-init-container
+        client_secret: replaced-by-init-container
+        scopes:
+          - openid
+          - profile
+          - email
+        backchannel_logout_enabled: true
+        user_mapping_provider:
+          config:
+            localpart_template: "{{ user.preferred_username }}"
+            display_name_template: "{{ user.name|default(user.preferred_username, true) }}"
+            email_template: "{{ user.email }}"
+
     max_upload_size: 90M
     max_pending_media_uploads: 3
 

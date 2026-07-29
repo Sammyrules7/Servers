@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - synapse-db-role.enc.yaml
   - runtime-secret.enc.yaml
+  - oidc-secret.enc.yaml
   - database.yaml
   - bucket.yaml
   - garage-key.yaml

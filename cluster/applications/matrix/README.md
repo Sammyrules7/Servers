@@ -30,6 +30,26 @@ kubectl exec -n matrix deploy/matrix -c synapse -it -- \
 The command prompts for a password. Additional accounts can be created the same
 way without `--admin`.
 
+## Authentik SSO
+
+Synapse uses the Authentik OIDC issuer
+`https://auth.maio-tech.com/application/o/matrix/`. The matching Authentik
+provider must be confidential, use an RS256 signing key, and allow:
+
+```text
+https://matrix.maio-tech.com/_synapse/client/oidc/callback
+```
+
+Configure its back-channel logout URL as:
+
+```text
+https://matrix.maio-tech.com/_synapse/client/oidc/backchannel_logout
+```
+
+The provider's client ID and secret are stored in the SOPS-encrypted
+`oidc-secret.enc.yaml`. Local password authentication remains enabled for an
+emergency administrator account.
+
 The website at `maio-tech.com` serves Matrix client and federation delegation
 from `/.well-known/matrix/client` and `/.well-known/matrix/server`.
 
