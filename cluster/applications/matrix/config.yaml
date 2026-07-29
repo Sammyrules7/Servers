@@ -58,8 +58,8 @@ data:
     allow_public_rooms_without_auth: false
     allow_public_rooms_over_federation: false
     password_config:
-      enabled: true
-      localdb_enabled: true
+      enabled: false
+      localdb_enabled: false
 
     oidc_providers:
       - idp_id: authentik

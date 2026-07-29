@@ -15,21 +15,9 @@ Remote media objects expire from Garage after 30 days and are fetched again on
 demand. URL previews are disabled because Synapse intentionally keeps that
 short-lived cache out of external storage providers.
 
-Registration is intentionally disabled. Create the first administrator after the
-deployment is ready:
-
-```sh
-kubectl exec -n matrix deploy/matrix -c synapse -it -- \
-  register_new_matrix_user \
-  --config /data/homeserver.yaml \
-  --user matrix-admin-recovery \
-  --admin \
-  http://127.0.0.1:8008
-```
-
-The command prompts for a password. Keep this local username different from any
-Authentik username so Synapse does not need to link two identities implicitly.
-Additional local accounts can be created the same way without `--admin`.
+Registration and local password authentication are disabled. Users sign in
+exclusively through Authentik. Existing users can be promoted to server
+administrators using Synapse's documented database procedure.
 
 ## Authentik SSO
 
@@ -48,8 +36,7 @@ https://matrix.maio-tech.com/_synapse/client/oidc/backchannel_logout
 ```
 
 The provider's client ID and secret are stored in the SOPS-encrypted
-`oidc-secret.enc.yaml`. Local password authentication remains enabled for an
-emergency administrator account.
+`oidc-secret.enc.yaml`.
 
 The website at `maio-tech.com` serves Matrix client and federation delegation
 from `/.well-known/matrix/client` and `/.well-known/matrix/server`.
