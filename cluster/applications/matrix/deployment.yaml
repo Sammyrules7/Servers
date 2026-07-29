@@ -136,6 +136,9 @@ spec:
             - name: matrix-secrets
               mountPath: /run/matrix-secrets
               readOnly: true
+            - name: python-modules
+              mountPath: /modules
+              readOnly: true
             - name: temporary
               mountPath: /tmp
       volumes:
