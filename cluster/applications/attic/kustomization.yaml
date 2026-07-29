@@ -9,6 +9,5 @@ resources:
   - key-gen.yaml
   - config.enc.yaml
   - deployment.yaml
-  - hpa.yaml
   - gc-job.yaml
   - ingress.yaml

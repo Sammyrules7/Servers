@@ -4,7 +4,12 @@ metadata:
   name: attic
   namespace: atticd
 spec:
-  replicas: 2
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: attic
@@ -13,6 +18,7 @@ spec:
       labels:
         app: attic
     spec:
+      terminationGracePeriodSeconds: 900
       initContainers:
         - name: attic-migrations
           image: ghcr.io/zhaofengli/attic:latest
@@ -55,13 +61,27 @@ spec:
             periodSeconds: 10
           ports:
             - containerPort: 8080
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 10
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 512Mi
+            limits:
+              memory: 1Gi
           volumeMounts:
             - name: secret-config-volume
               mountPath: /etc/attic
+          env:
+            - name: MALLOC_ARENA_MAX
+              value: "2"
+            - name: MALLOC_TRIM_THRESHOLD_
+              value: "131072"
           envFrom:
             - secretRef:
                 name: attic-s3
