@@ -144,6 +144,28 @@ spec:
               readOnly: true
             - name: temporary
               mountPath: /tmp
+        - name: media-cache-reaper
+          image: docker.io/library/busybox:1.37.0
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              while true; do
+                find /tmp/media_store -type f -mmin +10 -delete 2>/dev/null || true
+                find /tmp/media_store -depth -type d -empty -delete 2>/dev/null || true
+                sleep 300
+              done
+          resources:
+            requests:
+              cpu: 1m
+              memory: 4Mi
+            limits:
+              cpu: 50m
+              memory: 16Mi
+          volumeMounts:
+            - name: temporary
+              mountPath: /tmp
       volumes:
         - name: config-template
           configMap:

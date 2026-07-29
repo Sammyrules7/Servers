@@ -47,7 +47,10 @@ data:
 
     enable_metrics: true
     enable_media_repo: true
-    enable_local_media_storage: false
+    # The S3 provider currently reads uploads from media_store_path. Keep that
+    # path enabled on the RAM-backed /tmp volume; the media-cache-reaper removes
+    # these transient copies after S3 has stored them.
+    enable_local_media_storage: true
     enable_registration: false
     enable_registration_without_verification: false
     registration_shared_secret: replaced-by-init-container
