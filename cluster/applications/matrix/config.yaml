@@ -90,7 +90,7 @@ data:
         config:
           bucket: matrix-media
           region_name: garage
-          endpoint_url: replaced-by-init-container
+          endpoint_url: "http://garage-main-cluster.garage-cluster.svc.cluster.local:3900"
           access_key_id: replaced-by-init-container
           secret_access_key: replaced-by-init-container
 

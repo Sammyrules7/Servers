@@ -1,9 +1,12 @@
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
 metadata:
   name: matrix
   namespace: matrix
 spec:
+  namespaceSelector:
+    matchNames:
+      - matrix
   selector:
     matchLabels:
       app: matrix
@@ -11,3 +14,6 @@ spec:
     - port: synapse-metrics
       path: /_synapse/metrics
       interval: 30s
+      relabelConfigs:
+        - targetLabel: job
+          replacement: matrix

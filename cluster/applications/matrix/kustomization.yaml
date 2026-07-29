@@ -12,3 +12,4 @@ resources:
   - deployment.yaml
   - ingress.yaml
   - monitoring.yaml
+  - dashboard.yaml

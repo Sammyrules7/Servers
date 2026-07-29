@@ -12,9 +12,11 @@ spec:
     name: matrix-s3
     accessKeyIdKey: S3_ACCESS_KEY_ID
     secretAccessKeyKey: S3_ACCESS_SECRET
+    endpointKey: S3_ENDPOINT
     hostKey: S3_HOST
-    includeEndpoint: false
-    includeRegion: false
+    schemeKey: S3_SCHEME
+    includeEndpoint: true
+    includeRegion: true
   bucketPermissions:
     - bucketRef:
         name: matrix-media
