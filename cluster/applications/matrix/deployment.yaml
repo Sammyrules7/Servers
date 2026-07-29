@@ -1,0 +1,180 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matrix
+  namespace: matrix
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: matrix
+  template:
+    metadata:
+      labels:
+        app: matrix
+    spec:
+      initContainers:
+        - name: render-config
+          image: docker.io/mikefarah/yq:4.53.3
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              cp /templates/homeserver.yaml /rendered/homeserver.yaml
+
+              yq -i '
+                .database.args.password = strenv(SYNAPSE_DB_PASSWORD) |
+                .registration_shared_secret = strenv(REGISTRATION_SHARED_SECRET) |
+                .macaroon_secret_key = strenv(MACAROON_SECRET_KEY) |
+                .form_secret = strenv(FORM_SECRET) |
+                .media_storage_providers[0].config.endpoint_url = ("http://" + strenv(S3_HOST)) |
+                .media_storage_providers[0].config.access_key_id = strenv(S3_ACCESS_KEY_ID) |
+                .media_storage_providers[0].config.secret_access_key = strenv(S3_ACCESS_SECRET)
+              ' /rendered/homeserver.yaml
+          envFrom:
+            - secretRef:
+                name: matrix-runtime
+            - secretRef:
+                name: matrix-s3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: config-template
+              mountPath: /templates
+            - name: rendered-config
+              mountPath: /rendered
+        - name: install-s3-provider
+          image: ghcr.io/element-hq/synapse:v1.157.2
+          env:
+            - name: PIP_ROOT_USER_ACTION
+              value: ignore
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              python -m pip install \
+                --disable-pip-version-check \
+                --no-cache-dir \
+                --target /modules \
+                boto3==1.43.58
+              python -m pip install \
+                --disable-pip-version-check \
+                --no-cache-dir \
+                --no-deps \
+                --upgrade \
+                --target /modules \
+                synapse-s3-storage-provider==1.6.1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          volumeMounts:
+            - name: python-modules
+              mountPath: /modules
+            - name: temporary
+              mountPath: /tmp
+      containers:
+        - name: synapse
+          image: ghcr.io/element-hq/synapse:v1.157.2
+          args:
+            - run
+          env:
+            - name: SYNAPSE_CONFIG_PATH
+              value: /data/homeserver.yaml
+            - name: PYTHONPATH
+              value: /modules
+          ports:
+            - name: synapse
+              containerPort: 8008
+            - name: synapse-metrics
+              containerPort: 9090
+          startupProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: synapse
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: synapse
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: synapse
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          volumeMounts:
+            - name: rendered-config
+              mountPath: /data/homeserver.yaml
+              subPath: homeserver.yaml
+              readOnly: true
+            - name: config-template
+              mountPath: /etc/matrix/synapse-log.yaml
+              subPath: synapse-log.yaml
+              readOnly: true
+            - name: matrix-secrets
+              mountPath: /run/matrix-secrets
+              readOnly: true
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: config-template
+          configMap:
+            name: matrix-config
+        - name: rendered-config
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi
+        - name: matrix-secrets
+          secret:
+            secretName: matrix-runtime
+            items:
+              - key: signing.key
+                path: signing.key
+        - name: temporary
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
+        - name: python-modules
+          emptyDir:
+            medium: Memory
+            sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matrix
+  namespace: matrix
+  labels:
+    app: matrix
+spec:
+  selector:
+    app: matrix
+  ports:
+    - name: synapse
+      port: 8008
+      targetPort: synapse
+    - name: synapse-metrics
+      port: 9090
+      targetPort: synapse-metrics

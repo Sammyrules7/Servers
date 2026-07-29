@@ -19,6 +19,10 @@ spec:
       - host all forgejo 0.0.0.0/0 reject
       - host forgejo forgejo ::/0 scram-sha-256
       - host all forgejo ::/0 reject
+      - host matrix_synapse matrix_synapse 0.0.0.0/0 scram-sha-256
+      - host all matrix_synapse 0.0.0.0/0 reject
+      - host matrix_synapse matrix_synapse ::/0 scram-sha-256
+      - host all matrix_synapse ::/0 reject
   bootstrap:
     initdb:
       database: main_db

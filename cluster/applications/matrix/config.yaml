@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matrix-config
+  namespace: matrix
+data:
+  homeserver.yaml: |
+    server_name: "maio-tech.com"
+    public_baseurl: "https://matrix.maio-tech.com/"
+    serve_server_wellknown: false
+    report_stats: false
+
+    pid_file: /tmp/homeserver.pid
+    signing_key_path: /run/matrix-secrets/signing.key
+    log_config: /etc/matrix/synapse-log.yaml
+    media_store_path: /tmp/media_store
+
+    listeners:
+      - port: 8008
+        bind_addresses:
+          - "0.0.0.0"
+        type: http
+        tls: false
+        x_forwarded: true
+        resources:
+          - names:
+              - client
+              - federation
+            compress: false
+      - port: 9090
+        bind_addresses:
+          - "0.0.0.0"
+        type: metrics
+        tls: false
+
+    database:
+      name: psycopg2
+      args:
+        host: postgres-rw.postgres.svc.cluster.local
+        port: 5432
+        database: matrix_synapse
+        user: matrix_synapse
+        password: replaced-by-init-container
+        sslmode: disable
+        cp_min: 2
+        cp_max: 8
+
+    enable_metrics: true
+    enable_media_repo: true
+    enable_local_media_storage: false
+    enable_registration: false
+    enable_registration_without_verification: false
+    registration_shared_secret: replaced-by-init-container
+    macaroon_secret_key: replaced-by-init-container
+    form_secret: replaced-by-init-container
+
+    allow_guest_access: false
+    allow_public_rooms_without_auth: false
+    allow_public_rooms_over_federation: false
+    password_config:
+      enabled: true
+      localdb_enabled: true
+
+    max_upload_size: 90M
+    max_pending_media_uploads: 3
+
+    media_storage_providers:
+      - module: s3_storage_provider.S3StorageProviderBackend
+        store_local: true
+        store_remote: true
+        store_synchronous: true
+        config:
+          bucket: matrix-media
+          region_name: garage
+          endpoint_url: replaced-by-init-container
+          access_key_id: replaced-by-init-container
+          secret_access_key: replaced-by-init-container
+
+    media_retention:
+      remote_media_lifetime: 30d
+
+    # Synapse deliberately does not send its short-lived URL preview cache to
+    # external storage providers. Keep previews disabled rather than adding a
+    # node-backed local cache solely for them.
+    url_preview_enabled: false
+
+    caches:
+      global_factor: 0.5
+    event_cache_size: 10K
+
+    trusted_key_servers:
+      - server_name: matrix.org
+    suppress_key_server_warning: true
+
+  synapse-log.yaml: |
+    version: 1
+    formatters:
+      precise:
+        format: "%(asctime)s %(levelname)s %(name)s %(message)s"
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+    loggers:
+      synapse.storage.SQL:
+        level: INFO
+    root:
+      level: INFO
+      handlers:
+        - console
+    disable_existing_loggers: false

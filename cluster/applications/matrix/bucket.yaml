@@ -1,0 +1,24 @@
+apiVersion: garage.rajsingh.info/v1beta1
+kind: GarageBucket
+metadata:
+  name: matrix-media
+  namespace: matrix
+spec:
+  clusterRef:
+    name: garage-main-cluster
+    namespace: garage-cluster
+  lifecycle:
+    rules:
+      - id: expire-remote-content
+        status: Enabled
+        filter:
+          prefix: remote_content/
+        expirationDays: 30
+      - id: expire-remote-thumbnails
+        status: Enabled
+        filter:
+          prefix: remote_thumbnail/
+        expirationDays: 30
+      - id: abort-incomplete-uploads
+        status: Enabled
+        abortIncompleteMultipartUploadDays: 1
