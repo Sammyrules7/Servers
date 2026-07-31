@@ -29,6 +29,10 @@ spec:
       - host all matrix_synapse 0.0.0.0/0 reject
       - host matrix_synapse matrix_synapse ::/0 scram-sha-256
       - host all matrix_synapse ::/0 reject
+      - host matrix_mas matrix_mas 0.0.0.0/0 scram-sha-256
+      - host all matrix_mas 0.0.0.0/0 reject
+      - host matrix_mas matrix_mas ::/0 scram-sha-256
+      - host all matrix_mas ::/0 reject
   bootstrap:
     initdb:
       database: main_db

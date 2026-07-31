@@ -64,23 +64,10 @@ data:
       enabled: false
       localdb_enabled: false
 
-    oidc_providers:
-      - idp_id: authentik
-        idp_name: Authentik
-        discover: true
-        issuer: "https://auth.maio-tech.com/application/o/matrix/"
-        client_id: replaced-by-init-container
-        client_secret: replaced-by-init-container
-        scopes:
-          - openid
-          - profile
-          - email
-        backchannel_logout_enabled: true
-        user_mapping_provider:
-          config:
-            localpart_template: "{{ user.preferred_username }}"
-            display_name_template: "{{ user.name|default(user.preferred_username, true) }}"
-            email_template: "{{ user.email }}"
+    matrix_authentication_service:
+      enabled: true
+      endpoint: http://matrix-mas:8080/
+      secret_path: /run/mas-shared/matrix-secret
 
     max_upload_size: 90M
     max_pending_media_uploads: 3

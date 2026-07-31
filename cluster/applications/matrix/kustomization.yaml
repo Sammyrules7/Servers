@@ -3,7 +3,9 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - synapse-db-role.enc.yaml
+  - mas-db-role.enc.yaml
   - runtime-secret.enc.yaml
+  - mas-runtime-secret.enc.yaml
   - oidc-secret.enc.yaml
   - rtc-secret.enc.yaml
   - database.yaml
@@ -18,3 +20,7 @@ resources:
   - rtc-deployment.yaml
   - rtc-ingress.yaml
   - rtc-monitoring.yaml
+  - mas-config.yaml
+  - mas-deployment.yaml
+  - mas-ingress.yaml
+  - mas-monitoring.yaml

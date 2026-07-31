@@ -18,24 +18,29 @@ demand. URL previews are disabled because Synapse intentionally keeps that
 short-lived cache out of external storage providers.
 
 Registration and local password authentication are disabled. Users sign in
-exclusively through Authentik. Existing users can be promoted to server
-administrators using Synapse's documented database procedure.
+exclusively through Authentik via Matrix Authentication Service (MAS). Existing
+users, devices, access tokens, and Authentik identity links were imported from
+Synapse so current clients remain signed in. MAS is stateless; its durable state
+lives in the separate `matrix_mas` PostgreSQL database.
 
 ## Authentik SSO
 
-Synapse uses the Authentik OIDC issuer
+MAS uses the Authentik OIDC issuer
 `https://auth.maio-tech.com/application/o/matrix/`. The matching Authentik
 provider must be confidential, use an RS256 signing key, and allow:
 
 ```text
-https://matrix.maio-tech.com/_synapse/client/oidc/callback
+https://mas.maio-tech.com/upstream/callback/01K1H1B8M2R7TCJ0P5AYNQFXDZ
 ```
 
-Configure its back-channel logout URL as:
+Configure back-channel logout as:
 
 ```text
-https://matrix.maio-tech.com/_synapse/client/oidc/backchannel_logout
+https://mas.maio-tech.com/upstream/backchannel-logout/01K1H1B8M2R7TCJ0P5AYNQFXDZ
 ```
+
+Keep Synapse's former login callback registered during the initial rollback
+window.
 
 The provider's client ID and secret are stored in the SOPS-encrypted
 `oidc-secret.enc.yaml`.

@@ -32,3 +32,38 @@ spec:
   localeCollate: C
   localeCType: C
   template: template0
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: matrix-mas
+  namespace: postgres
+spec:
+  cluster:
+    name: postgres
+  name: matrix_mas
+  comment: Matrix Authentication Service application role
+  login: true
+  superuser: false
+  createdb: false
+  createrole: false
+  replication: false
+  bypassrls: false
+  passwordSecret:
+    name: matrix-mas-db-role
+  databaseRoleReclaimPolicy: retain
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: matrix-mas
+  namespace: postgres
+spec:
+  name: matrix_mas
+  cluster:
+    name: postgres
+  owner: matrix_mas
+  encoding: UTF8
+  localeCollate: C
+  localeCType: C
+  template: template0

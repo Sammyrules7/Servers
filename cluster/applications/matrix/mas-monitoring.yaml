@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: matrix-mas
+  namespace: matrix
+spec:
+  namespaceSelector:
+    matchNames:
+      - matrix
+  selector:
+    matchLabels:
+      app: matrix-mas
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      relabelConfigs:
+        - targetLabel: job
+          replacement: matrix-mas

@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matrix-mas-config
+  namespace: matrix
+data:
+  config.yaml: |
+    http:
+      public_base: https://mas.maio-tech.com/
+      listeners:
+        - name: web
+          resources:
+            - name: discovery
+            - name: human
+            - name: oauth
+            - name: compat
+            - name: graphql
+            - name: assets
+          binds:
+            - host: 0.0.0.0
+              port: 8080
+        - name: internal
+          resources:
+            - name: health
+            - name: prometheus
+          binds:
+            - host: 0.0.0.0
+              port: 8081
+
+    database:
+      host: postgres-rw.postgres.svc.cluster.local
+      port: 5432
+      username: matrix_mas
+      password: replaced-by-init-container
+      database: matrix_mas
+      ssl_mode: disable
+      min_connections: 1
+      max_connections: 5
+
+    matrix:
+      kind: synapse
+      homeserver: maio-tech.com
+      endpoint: http://matrix:8008
+      secret_file: /run/mas-secrets/matrix-secret
+
+    secrets:
+      encryption_file: /run/mas-secrets/encryption
+      keys:
+        - key_file: /run/mas-secrets/signing.pem
+
+    passwords:
+      enabled: false
+      # syn2mas requires the imported Synapse hashes to retain their original
+      # scheme even though interactive password login remains disabled.
+      schemes:
+        - version: 1
+          algorithm: bcrypt
+          unicode_normalization: true
+
+    upstream_oauth2:
+      providers:
+        - id: 01K1H1B8M2R7TCJ0P5AYNQFXDZ
+          synapse_idp_id: oidc-authentik
+          issuer: https://auth.maio-tech.com/application/o/matrix/
+          human_name: Authentik
+          client_id: replaced-by-init-container
+          client_secret_file: /run/oidc/AUTHENTIK_CLIENT_SECRET
+          token_endpoint_auth_method: client_secret_basic
+          scope: "openid profile email"
+          on_backchannel_logout: logout_all
+          claims_imports:
+            skip_confirmation: true
+            localpart:
+              action: require
+              template: "{{ user.preferred_username }}"
+            displayname:
+              action: force
+              template: "{{ user.name }}"
+            email:
+              action: force
+              template: "{{ user.email }}"
+
+    telemetry:
+      tracing:
+        exporter: none
+      metrics:
+        exporter: prometheus
+
+    email:
+      transport: blackhole
+
+    branding:
+      service_name: Maio Matrix
