@@ -8,9 +8,11 @@ Durable state lives in the `matrix_synapse` PostgreSQL database and the
 The Matrix server name is permanent once users or rooms are created.
 
 Synapse uses `synapse-s3-storage-provider` to synchronously store local media,
-remote media, and thumbnails in Garage. Local media storage is disabled.
-Temporary processing and the provider installation use memory-backed
-`emptyDir` volumes, so there is no node-backed media cache or persistent volume.
+remote media, and thumbnails in Garage. The provider stages uploads in the
+memory-backed media store required by its current API, and a reaper removes
+those transient copies after ten minutes. Temporary processing and the provider
+installation use memory-backed `emptyDir` volumes, so there is no node-backed
+media cache or persistent volume.
 Remote media objects expire from Garage after 30 days and are fetched again on
 demand. URL previews are disabled because Synapse intentionally keeps that
 short-lived cache out of external storage providers.
@@ -40,6 +42,18 @@ The provider's client ID and secret are stored in the SOPS-encrypted
 
 The website at `maio-tech.com` serves Matrix client and federation delegation
 from `/.well-known/matrix/client` and `/.well-known/matrix/server`.
+
+## Calling
+
+MatrixRTC calling uses LiveKit and the Element MatrixRTC authorization service
+at `rtc.maio-tech.com`. HTTPS signaling is routed through Cloudflare and the
+Envoy Gateway. WebRTC media bypasses the HTTP proxy and reaches LiveKit directly
+on UDP port `50000`, with TCP port `7881` as a fallback. Both ports must be
+forwarded by the home router to a Kubernetes node in the `home` topology zone.
+
+Only users whose Matrix server is `maio-tech.com` may create LiveKit rooms.
+Federated users can join rooms that already exist. LiveKit room auto-creation is
+disabled so the authorization service enforces that boundary.
 
 Validate discovery and federation after the website and server are deployed:
 

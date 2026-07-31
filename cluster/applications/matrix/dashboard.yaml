@@ -172,7 +172,7 @@ data:
           },
           "targets": [
             {
-              "expr": "max(process_resident_memory_bytes{namespace=\"matrix\"})",
+              "expr": "max(process_resident_memory_bytes{namespace=\"matrix\",job=\"matrix\"})",
               "legendFormat": "RSS",
               "refId": "A"
             }
@@ -213,7 +213,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sum(rate(process_cpu_seconds_total{namespace=\"matrix\"}[$__rate_interval]))",
+              "expr": "sum(rate(process_cpu_seconds_total{namespace=\"matrix\",job=\"matrix\"}[$__rate_interval]))",
               "legendFormat": "CPU",
               "refId": "A"
             }

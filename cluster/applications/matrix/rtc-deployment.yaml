@@ -1,0 +1,224 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matrix-rtc-livekit
+  namespace: matrix
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: matrix-rtc
+      component: livekit
+  template:
+    metadata:
+      labels:
+        app: matrix-rtc
+        component: livekit
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - home
+      initContainers:
+        - name: render-config
+          image: docker.io/mikefarah/yq:4.53.3
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              cp /templates/livekit.yaml /rendered/livekit.yaml
+              yq -i '
+                .keys = {(strenv(LIVEKIT_KEY)): strenv(LIVEKIT_SECRET)} |
+                .webhook.api_key = strenv(LIVEKIT_KEY)
+              ' /rendered/livekit.yaml
+          envFrom:
+            - secretRef:
+                name: matrix-rtc
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: config-template
+              mountPath: /templates
+            - name: rendered-config
+              mountPath: /rendered
+      containers:
+        - name: livekit
+          image: docker.io/livekit/livekit-server:v1.13.4
+          args:
+            - --config
+            - /etc/livekit/livekit.yaml
+          ports:
+            - name: signal
+              containerPort: 7880
+              protocol: TCP
+            - name: rtc-tcp
+              containerPort: 7881
+              protocol: TCP
+            - name: rtc-udp
+              containerPort: 50000
+              protocol: UDP
+            - name: metrics
+              containerPort: 6789
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: signal
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: signal
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: signal
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi
+          volumeMounts:
+            - name: rendered-config
+              mountPath: /etc/livekit/livekit.yaml
+              subPath: livekit.yaml
+              readOnly: true
+      volumes:
+        - name: config-template
+          configMap:
+            name: matrix-rtc-config
+        - name: rendered-config
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matrix-rtc-livekit
+  namespace: matrix
+  labels:
+    app: matrix-rtc
+    component: livekit
+spec:
+  selector:
+    app: matrix-rtc
+    component: livekit
+  ports:
+    - name: signal
+      port: 7880
+      targetPort: signal
+    - name: metrics
+      port: 6789
+      targetPort: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matrix-rtc-media
+  namespace: matrix
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    app: matrix-rtc
+    component: livekit
+  ports:
+    - name: rtc-tcp
+      port: 7881
+      targetPort: rtc-tcp
+      protocol: TCP
+    - name: rtc-udp
+      port: 50000
+      targetPort: rtc-udp
+      protocol: UDP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matrix-rtc-jwt
+  namespace: matrix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matrix-rtc
+      component: jwt
+  template:
+    metadata:
+      labels:
+        app: matrix-rtc
+        component: jwt
+    spec:
+      containers:
+        - name: jwt
+          image: ghcr.io/element-hq/lk-jwt-service:0.5.0
+          env:
+            - name: LIVEKIT_URL
+              value: wss://rtc.maio-tech.com/livekit/sfu
+            - name: LIVEKIT_FULL_ACCESS_HOMESERVERS
+              value: maio-tech.com
+            - name: LIVEKIT_SANITY_CHECK_INTERVAL_SECONDS
+              value: "30"
+            - name: LIVEKIT_LOG_LEVEL
+              value: info
+          envFrom:
+            - secretRef:
+                name: matrix-rtc
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matrix-rtc-jwt
+  namespace: matrix
+spec:
+  selector:
+    app: matrix-rtc
+    component: jwt
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
