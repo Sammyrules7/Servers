@@ -32,7 +32,11 @@
         - -ec
       args:
         - |
-          mkdir -p /data/.local/bin /data/workspace/skills/developer-tooling /tmp/openclaw-tools
+          mkdir -p \
+            /data/.local/bin \
+            /data/workspace/skills/developer-tooling \
+            /data/workspace/skills/gog \
+            /tmp/openclaw-tools
 
           if [ ! -f /data/.local/.jq-1.8.1 ]; then
             curl -fsSL -o /tmp/openclaw-tools/jq \
@@ -55,6 +59,8 @@
 
           cp /tooling/developer-tooling-SKILL.md \
             /data/workspace/skills/developer-tooling/SKILL.md
+          cp /tooling/gog-SKILL.md \
+            /data/workspace/skills/gog/SKILL.md
       securityContext:
         allowPrivilegeEscalation: false
         runAsNonRoot: true

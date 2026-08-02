@@ -5,6 +5,7 @@ resources:
   - forgejo-service.yaml
   - monitoring.yaml
   - tooling.yaml
+  - gog-oauth.enc.yaml
   - sammy-secrets.enc.yaml
   - georgie-secrets.enc.yaml
   - kevin-secrets.enc.yaml
