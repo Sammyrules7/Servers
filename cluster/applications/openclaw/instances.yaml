@@ -14,12 +14,24 @@ spec:
     repository: ghcr.io/openclaw/openclaw
     tag: "2026.7.1"
     pullPolicy: IfNotPresent
+  chromium:
+    enabled: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi
   config:
     raw:
       agents:
         defaults:
           model:
-            primary: openai/gpt-5.6-terra
+            primary: openai/gpt-5.6-sol
+          thinkingDefault: low
+      browser:
+        enabled: true
       channels:
         discord:
           enabled: true
@@ -30,15 +42,27 @@ spec:
       commands:
         ownerAllowFrom:
           - "discord:772830229356871720"
+      gateway:
+        nodes:
+          browser:
+            mode: "off"
+      meta:
+        lastTouchedVersion: "2026.7.1"
       plugins:
         allow:
+          - browser
           - discord
           - diagnostics-otel
         entries:
+          browser:
+            enabled: true
           discord:
             enabled: true
           diagnostics-otel:
             enabled: true
+      tools:
+        alsoAllow:
+          - browser
   plugins:
     - "@openclaw/discord"
   runtimeDeps:
@@ -112,18 +136,42 @@ spec:
     repository: ghcr.io/openclaw/openclaw
     tag: "2026.7.1"
     pullPolicy: IfNotPresent
+  chromium:
+    enabled: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi
   config:
     raw:
       agents:
         defaults:
           model:
-            primary: openai/gpt-5.6-terra
+            primary: openai/gpt-5.6-sol
+          thinkingDefault: low
+      browser:
+        enabled: true
+      gateway:
+        nodes:
+          browser:
+            mode: "off"
+      meta:
+        lastTouchedVersion: "2026.7.1"
       plugins:
         allow:
+          - browser
           - diagnostics-otel
         entries:
+          browser:
+            enabled: true
           diagnostics-otel:
             enabled: true
+      tools:
+        alsoAllow:
+          - browser
   runtimeDeps:
     pnpm: true
     python: true
@@ -184,18 +232,42 @@ spec:
     repository: ghcr.io/openclaw/openclaw
     tag: "2026.7.1"
     pullPolicy: IfNotPresent
+  chromium:
+    enabled: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi
   config:
     raw:
       agents:
         defaults:
           model:
-            primary: openai/gpt-5.6-terra
+            primary: openai/gpt-5.6-sol
+          thinkingDefault: low
+      browser:
+        enabled: true
+      gateway:
+        nodes:
+          browser:
+            mode: "off"
+      meta:
+        lastTouchedVersion: "2026.7.1"
       plugins:
         allow:
+          - browser
           - diagnostics-otel
         entries:
+          browser:
+            enabled: true
           diagnostics-otel:
             enabled: true
+      tools:
+        alsoAllow:
+          - browser
   runtimeDeps:
     pnpm: true
     python: true
