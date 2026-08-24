@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: render-config
-          image: docker.io/mikefarah/yq:4.53.3
+          image: docker.io/mikefarah/yq:4.53.6
           command:
             - /bin/sh
             - -ec
@@ -51,7 +51,7 @@ spec:
             - name: rendered-config
               mountPath: /rendered
         - name: install-s3-provider
-          image: ghcr.io/element-hq/synapse:v1.157.2
+          image: ghcr.io/element-hq/synapse:v1.159.0
           env:
             - name: PIP_ROOT_USER_ACTION
               value: ignore
@@ -86,7 +86,7 @@ spec:
               mountPath: /tmp
       containers:
         - name: synapse
-          image: ghcr.io/element-hq/synapse:v1.157.2
+          image: ghcr.io/element-hq/synapse:v1.159.0
           args:
             - run
           env:
@@ -144,7 +144,7 @@ spec:
             - name: temporary
               mountPath: /tmp
         - name: media-cache-reaper
-          image: docker.io/library/busybox:1.37.0
+          image: docker.io/library/busybox:1.38.0
           command:
             - /bin/sh
             - -ec

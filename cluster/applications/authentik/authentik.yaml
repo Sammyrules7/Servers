@@ -16,7 +16,7 @@ spec:
   chart:
     spec:
       chart: authentik
-      version: "2026.5.x"
+      version: "2026.8.x"
       sourceRef:
         kind: HelmRepository
         name: authentik
@@ -30,9 +30,16 @@ spec:
       name: authentik-secret-key
       valuesKey: values.yaml
   values:
+    authentik:
+      postgresql:
+        # Authentik uses session advisory locks, which are unsafe through the
+        # transaction-pooled PgBouncer service because the locks can leak.
+        host: postgres-rw.postgres.svc.cluster.local
     error_reporting:
       enabled: false
     server:
+      deploymentStrategy:
+        type: Recreate
       resources:
         requests:
           cpu: 100m
@@ -40,6 +47,10 @@ spec:
         limits:
           memory: 1536Mi
     worker:
+      # A rolling update keeps the old singleton worker holding the database lock,
+      # so the replacement never creates its health socket. Recreate it instead.
+      deploymentStrategy:
+        type: Recreate
       resources:
         requests:
           cpu: 100m

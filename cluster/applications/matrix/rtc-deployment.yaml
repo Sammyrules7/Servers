@@ -28,7 +28,7 @@ spec:
                       - home
       initContainers:
         - name: render-config
-          image: docker.io/mikefarah/yq:4.53.3
+          image: docker.io/mikefarah/yq:4.53.6
           command:
             - /bin/sh
             - -ec
@@ -56,7 +56,7 @@ spec:
               mountPath: /rendered
       containers:
         - name: livekit
-          image: docker.io/livekit/livekit-server:v1.13.4
+          image: docker.io/livekit/livekit-server:v1.13.5
           args:
             - --config
             - /etc/livekit/livekit.yaml
@@ -168,7 +168,7 @@ spec:
     spec:
       containers:
         - name: jwt
-          image: ghcr.io/element-hq/lk-jwt-service:0.5.0
+          image: ghcr.io/element-hq/lk-jwt-service:0.6.0
           env:
             - name: LIVEKIT_URL
               value: wss://rtc.maio-tech.com/livekit/sfu

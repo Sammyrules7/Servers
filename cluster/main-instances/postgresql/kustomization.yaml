@@ -5,4 +5,5 @@ resources:
   - namespace.yaml
   - postgres-admin.enc.yaml
   - cluster.yaml
+  - podmonitor.yaml
   - bouncer.yaml

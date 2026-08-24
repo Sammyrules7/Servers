@@ -1,4 +1,8 @@
-{ lib, ... }: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ../../lib/base.nix
     ./hardware.nix
@@ -14,7 +18,37 @@
     2222
   ];
   networking.firewall.allowedTCPPorts = [ 2222 ];
-  networking.interfaces.tailscale0.mtu = 1160;
+
+  # The path to this node cannot carry Tailscale's default 1280-byte MTU.
+  # Configuring networking.interfaces.tailscale0 is not sufficient because
+  # tailscaled recreates the interface after network setup. Reapply the MTU
+  # whenever tailscaled starts so large SSH packets do not get black-holed.
+  systemd.services.tailscale-mtu = {
+    description = "Set the server2 Tailscale MTU";
+    after = [ "tailscaled.service" ];
+    requires = [ "tailscaled.service" ];
+    partOf = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      for attempt in {1..30}; do
+        if ${pkgs.iproute2}/bin/ip link set dev tailscale0 mtu 1160; then
+          exit 0
+        fi
+        sleep 1
+      done
+      exit 1
+    '';
+  };
+  systemd.timers.tailscale-mtu = {
+    description = "Periodically enforce the server2 Tailscale MTU";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "1min";
+      Unit = "tailscale-mtu.service";
+    };
+  };
 
   k3s.enable = true;
   k3s.role = "agent";

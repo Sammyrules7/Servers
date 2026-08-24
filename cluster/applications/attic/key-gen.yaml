@@ -33,6 +33,10 @@ kind: Job
 metadata:
   name: attic-secret-bootstrap
   namespace: atticd
+  annotations:
+    # This is an idempotent, one-time bootstrap job. Its Pod template is
+    # immutable, so leave an existing completed job untouched on upgrades.
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   template:
     spec:

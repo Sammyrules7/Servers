@@ -36,6 +36,10 @@ kind: Job
 metadata:
   name: sops-age-keygen
   namespace: flux-system
+  annotations:
+    # This is an idempotent, one-time bootstrap job. Its Pod template is
+    # immutable, so leave an existing completed job untouched on upgrades.
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   template:
     spec:

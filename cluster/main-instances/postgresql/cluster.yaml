@@ -50,4 +50,4 @@ spec:
     size: 5Gi
     storageClass: local-path
   monitoring:
-    enablePodMonitor: true
+    enablePodMonitor: false

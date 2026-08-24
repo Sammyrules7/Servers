@@ -28,6 +28,7 @@
       ...
     }:
     let
+      system = "x86_64-linux";
       commonModules = [
         sops-nix.nixosModules.sops
       ];
@@ -36,7 +37,7 @@
       # Colmena Fleet Configuration
       colmena = {
         meta = {
-          nixpkgs = import nixpkgs { system = "x86_64-linux"; };
+          nixpkgs = import nixpkgs { inherit system; };
           specialArgs = { inherit self; };
         };
 
@@ -76,5 +77,12 @@
 
       # Required for modern flake-compatible Colmena deployments
       colmenaHive = colmena.lib.makeHive self.outputs.colmena;
+
+      # Keep the deployment CLI pinned to the same Colmena revision as the
+      # hive instead of resolving github:zhaofengli/colmena on every run.
+      apps.${system}.colmena = colmena.apps.${system}.colmena // {
+        meta.description = "Deploy the NixOS cluster with Colmena";
+      };
+      packages.${system}.colmena = colmena.packages.${system}.colmena;
     };
 }
