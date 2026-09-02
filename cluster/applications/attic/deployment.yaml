@@ -18,7 +18,9 @@ spec:
       labels:
         app: attic
     spec:
-      terminationGracePeriodSeconds: 900
+      # Allow the endpoint-removal preStop delay, but do not let long-lived
+      # cache clients hold a rollout open for the previous 15-minute window.
+      terminationGracePeriodSeconds: 60
       initContainers:
         - name: attic-migrations
           image: ghcr.io/zhaofengli/attic:latest
