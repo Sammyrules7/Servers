@@ -5,7 +5,7 @@
 
   systemd.services.nix-gc.serviceConfig = {
     Nice = 19;
-    IOSchedulingClass = "best-effect";
+    IOSchedulingClass = "best-effort";
     IOSchedulingPriority = 7;
   };
 }

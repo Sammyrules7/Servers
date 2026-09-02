@@ -57,7 +57,7 @@
     "topology.kubernetes.io/zone" = "alt";
   };
 
-  zramSwap = lib.mkDefault {
+  zramSwap = {
     algorithm = "lz4";
     memoryPercent = 75;
   };

@@ -49,6 +49,7 @@ spec:
                 - default:k8s:/config/podspec-default.yaml
               timeout: 3h
           podspec-default.yaml: |-
+            automountServiceAccountToken: false
             containers:
               - env:
                   - name: DEBIAN_FRONTEND

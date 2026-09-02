@@ -8,8 +8,8 @@
 {
   zramSwap = {
     enable = true;
-    algorithm = "zstd";
-    memoryPercent = 150;
+    algorithm = lib.mkDefault "zstd";
+    memoryPercent = lib.mkDefault 150;
   };
 
   boot.kernel.sysctl = {

@@ -49,6 +49,7 @@ spec:
             - /bin/bash
             - -c
             - |
+              set -euo pipefail
               SECRET_NAME="attic-jwt-secret"
               ENV_KEY="ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64"
 

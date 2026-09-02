@@ -12,7 +12,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     colmena.url = "github:zhaofengli/colmena";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -22,7 +21,6 @@
     inputs@{
       self,
       nixpkgs,
-      nixpkgs-stable,
       colmena,
       sops-nix,
       ...
@@ -77,6 +75,11 @@
 
       # Required for modern flake-compatible Colmena deployments
       colmenaHive = colmena.lib.makeHive self.outputs.colmena;
+
+      # Force evaluation of every host during `nix flake check --no-build`.
+      checks.${system} = builtins.mapAttrs (
+        _: node: node.config.system.build.toplevel
+      ) self.colmenaHive.nodes;
 
       # Keep the deployment CLI pinned to the same Colmena revision as the
       # hive instead of resolving github:zhaofengli/colmena on every run.
