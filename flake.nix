@@ -15,6 +15,8 @@
     colmena.url = "github:zhaofengli/colmena";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nix-snapshotter.url = "github:pdtpartners/nix-snapshotter";
+    nix-snapshotter.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -23,12 +25,14 @@
       nixpkgs,
       colmena,
       sops-nix,
+      nix-snapshotter,
       ...
     }:
     let
       system = "x86_64-linux";
       commonModules = [
         sops-nix.nixosModules.sops
+        nix-snapshotter.nixosModules.default
       ];
     in
     {

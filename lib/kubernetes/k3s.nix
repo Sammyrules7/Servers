@@ -43,6 +43,9 @@ in {
    config = lib.mkIf cfg.enable {
     services.k3s = {
       enable = true;
+      # k3s 1.35 supports wiring nix-snapshotter into its embedded containerd.
+      # Existing OCI images continue to work through the snapshotter's fallback.
+      snapshotter = "nix";
       # Add custom options here
       inherit (cfg) role;
     }
@@ -76,9 +79,18 @@ in {
         ''))
     ];
 
-    systemd.services.k3s = lib.mkIf (sopsTokenPath != null && !isBootstrapMaster) {
-      after = [ "sops-install-secrets.service" ];
-      requires = [ "sops-install-secrets.service" ];
-    };
+    services.nix-snapshotter.enable = true;
+
+    # Ensure the CRI image-service socket exists before k3s starts.
+    systemd.services.k3s = lib.mkMerge [
+      {
+        after = [ "nix-snapshotter.service" ];
+        requires = [ "nix-snapshotter.service" ];
+      }
+      (lib.mkIf (sopsTokenPath != null && !isBootstrapMaster) {
+        after = [ "sops-install-secrets.service" ];
+        requires = [ "sops-install-secrets.service" ];
+      })
+    ];
   };
 }
