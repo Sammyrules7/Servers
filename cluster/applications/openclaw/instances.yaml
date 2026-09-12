@@ -64,7 +64,7 @@ spec:
         alsoAllow:
           - browser
   plugins:
-    - "@openclaw/discord"
+    - "npm:@openclaw/discord@2026.7.1"
   runtimeDeps:
     pnpm: true
     python: true
