@@ -47,6 +47,7 @@ spec:
               labels:
                 - ubuntu-latest:k8s:/config/podspec-default.yaml
                 - default:k8s:/config/podspec-default.yaml
+                - nix:k8s:/config/podspec-nix.yaml
               timeout: 3h
           podspec-default.yaml: |-
             automountServiceAccountToken: false
@@ -65,6 +66,33 @@ spec:
                     cpu: 100m
                     memory: 256Mi
             restartPolicy: Never
+          podspec-nix.yaml: |-
+            automountServiceAccountToken: false
+            containers:
+              - image: nix:0/nix/store/kkiqql4ai45i72s6axnms9c4v06xaibz-nix-image-vr-platform-builder-ci.tar
+                imagePullPolicy: IfNotPresent
+                name: main
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                volumeMounts:
+                  - mountPath: /nix/store
+                    name: nix-store
+                    readOnly: true
+                  - mountPath: /nix/var/nix/daemon-socket
+                    name: nix-daemon-socket
+                    readOnly: true
+            restartPolicy: Never
+            volumes:
+              - hostPath:
+                  path: /nix/store
+                  type: Directory
+                name: nix-store
+              - hostPath:
+                  path: /nix/var/nix/daemon-socket
+                  type: Directory
+                name: nix-daemon-socket
     controllers:
       forgejo-runner:
         type: deployment
