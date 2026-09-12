@@ -56,7 +56,7 @@ spec:
               mountPath: /rendered
       containers:
         - name: livekit
-          image: docker.io/livekit/livekit-server:v1.13.5
+          image: docker.io/livekit/livekit-server:v1.13.6
           args:
             - --config
             - /etc/livekit/livekit.yaml
@@ -168,7 +168,7 @@ spec:
     spec:
       containers:
         - name: jwt
-          image: ghcr.io/element-hq/lk-jwt-service:0.6.0
+          image: ghcr.io/element-hq/lk-jwt-service:0.7.0
           env:
             - name: LIVEKIT_URL
               value: wss://rtc.maio-tech.com/livekit/sfu
