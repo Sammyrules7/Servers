@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: forgejo-ssh-redirect
+  namespace: ingress
+spec:
+  parentRefs:
+    - name: gateway
+      sectionName: websecure-forgejo-ssh-redirect
+    - name: gateway
+      sectionName: web-forgejo-ssh-redirect
+  hostnames:
+    - git.forgejo.maio-tech.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            hostname: forgejo.maio-tech.com
+            statusCode: 308

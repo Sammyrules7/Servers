@@ -29,6 +29,19 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: forgejo-ssh-redirect-cert
+  namespace: ingress
+spec:
+  secretName: forgejo-ssh-redirect-cert
+  dnsNames:
+    - "git.forgejo.maio-tech.com"
+  issuerRef:
+    name: lets-encrypt-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: attic-letsencrypt-cert
   namespace: ingress
 spec:

@@ -11,6 +11,14 @@ spec:
       kind: EnvoyProxy
       name: envoy
   listeners:
+    - name: web-forgejo-ssh-redirect
+      port: 80
+      protocol: HTTP
+      hostname: "git.forgejo.maio-tech.com"
+      allowedRoutes:
+        namespaces:
+          from: All
+
     - name: websecure-tld
       port: 443
       protocol: HTTPS
@@ -31,6 +39,18 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: sub-domain
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: websecure-forgejo-ssh-redirect
+      port: 443
+      protocol: HTTPS
+      hostname: "git.forgejo.maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: forgejo-ssh-redirect-cert
       allowedRoutes:
         namespaces:
           from: All

@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - cluster.yaml
   - gateway.yaml
+  - forgejo-ssh-redirect.yaml
   - gatewayClass.yaml
   - certs.yaml
   - ./CF-mTLS
