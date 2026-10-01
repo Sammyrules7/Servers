@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
     name: cloudflare-dns-01-token
-    namespace: ingress
+    namespace: cert-manager
 type: Opaque
 stringData:
     api-token: ENC[AES256_GCM,data:mqzBkIeFE/ive/+/nN2xI3B522/KDMt04Vmj6wnBvTTLvOBPo7eUhyb9N2n5ugorRg4BoZU=,iv:ZzgzF9GCCe0B2dgvnw40HpaFKyt48K+ve44h9XMvQjw=,tag:S7xWn7Kzpwhdn6HxItni5g==,type:str]
@@ -38,6 +38,6 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age1mnacljduxclddus4xa83h079w0yqz94h22kxwxjqj26vu6fg2ckqc3gymn
     encrypted_regex: ^(data|stringData|password|token|secret)$
-    lastmodified: "2026-05-24T22:25:16Z"
-    mac: ENC[AES256_GCM,data:Tllc26kLGJ/ApnFBYrIKkSopc8BADj7lIJnFYFLvJflIr8kV30lwbk4M0k/+9q9yvsaBjV0rbEF7kxqb0Vfp+fYdo9bqVcfr2Y+rN9K92Bvf//uuo88C11G/GAgSmoTnGmAiz1cdLEUWls1GY/AFeRLm8Y4ITpTD2dOvrHalOJ0=,iv:29uVaOvQZgJhJUSm9TwA9wbLzzUMFM4sBtMEqC1KwSM=,tag:mQ4Usdv0+YJrPfFoc2x4jg==,type:str]
+    lastmodified: "2026-10-01T06:20:50Z"
+    mac: ENC[AES256_GCM,data:hZ8Br31XjPIxMkhZ+XJ/SezjkEe8BGKhFFgedIkk4lZ+kZc0uXybxcB3EtdLTnAch2AjrA6gT5Ub5oDlWXzECezJHw3K6/sQA2/iAXmhwuwdVCBfEGBvqiGgLdsKGo/JvTWIcvfbncmiuAKFeW2SF9F91ULzdFZUqUAZUDEmihs=,iv:kSMb7utwlwrM6M0bclpF55DxKuW4YJiK7wh0l67bi/g=,tag:kadC7k5JkFbTVg6Pun60ww==,type:str]
     version: 3.13.0

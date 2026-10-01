@@ -5,3 +5,4 @@ resources:
   - infrastructure.yaml
   - main-instances.yaml
   - applications.yaml
+  - satisfactory.yaml

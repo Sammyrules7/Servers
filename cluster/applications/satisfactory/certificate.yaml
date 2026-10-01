@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: satisfactory
+spec:
+  secretName: satisfactory-tls
+  dnsNames:
+    - satisfactory.maio-tech.com
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  issuerRef:
+    name: lets-encrypt-issuer
+    kind: ClusterIssuer

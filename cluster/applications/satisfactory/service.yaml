@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: satisfactory
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    app: satisfactory
+  ports:
+    - name: api
+      port: 7777
+      targetPort: api
+      protocol: TCP
+    - name: game
+      port: 7777
+      targetPort: game
+      protocol: UDP
+    - name: messaging
+      port: 8888
+      targetPort: messaging
+      protocol: TCP

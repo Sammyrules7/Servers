@@ -1,8 +1,7 @@
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: lets-encrypt-issuer
-  namespace: ingress
 spec:
   acme:
     email: sammyrules100@gmail.com

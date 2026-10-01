@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: satisfactory
+resources:
+  - namespace.yaml
+  - certificate.yaml
+  - deployment.yaml
+  - service.yaml
+  - passwords.enc.yaml
+  - bootstrap.yaml
+configMapGenerator:
+  - name: satisfactory-start
+    files:
+      - start.sh
+  - name: satisfactory-bootstrap
+    files:
+      - bootstrap.sh

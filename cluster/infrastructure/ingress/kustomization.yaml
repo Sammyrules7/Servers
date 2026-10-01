@@ -8,4 +8,5 @@ resources:
   - ./main-setup
   - ./envoy
   - ./cert-manager
+  - lets-encrypt-clusterissuer.yaml
   - ./cloudflare-origin-certs
