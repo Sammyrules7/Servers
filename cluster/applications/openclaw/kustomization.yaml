@@ -10,6 +10,7 @@ resources:
   - georgie-secrets.enc.yaml
   - kevin-secrets.enc.yaml
   - instances.yaml
+  - sammy-cluster-read.yaml
 patches:
   - path: openai-model-patch.yaml
     target:
