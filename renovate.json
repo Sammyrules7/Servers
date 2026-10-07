@@ -27,6 +27,36 @@
         "kubernetes"
       ],
       "groupName": "Kubernetes dependencies"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDepNames": [
+        "IamCoder18/schooltools"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": false,
+      "groupName": "schooltools"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/schooltools-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "SCHOOLTOOLS_COMMIT=(?<currentDigest>[a-f0-9]{40})\\n"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "IamCoder18/schooltools",
+      "packageNameTemplate": "https://github.com/IamCoder18/schooltools.git",
+      "datasourceTemplate": "git-refs"
     }
   ]
 }

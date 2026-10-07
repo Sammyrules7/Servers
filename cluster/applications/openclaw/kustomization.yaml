@@ -40,3 +40,9 @@ patches:
       version: v1alpha1
       kind: OpenClawInstance
       name: kevin
+  - path: schooltools-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
+      name: sammy

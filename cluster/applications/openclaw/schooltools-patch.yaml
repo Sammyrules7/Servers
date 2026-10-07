@@ -1,0 +1,56 @@
+# Sammy only: pinned source build using the existing persistent tools directory.
+- op: add
+  path: /spec/initContainers/-
+  value:
+    name: install-schooltools
+    image: golang:1.26.5-bookworm
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -ec
+    args:
+      - |
+        SCHOOLTOOLS_COMMIT=51bb17f95df33b00c40bcf69e07e1d2712e6bcaf
+        export HOME=/tmp/schooltools-home
+        export GOPATH=/tmp/schooltools-go
+        export GOCACHE=/tmp/schooltools-cache
+        export GOTOOLCHAIN=local
+        export CGO_ENABLED=0
+        mkdir -p "$HOME" /data/.local/bin
+        marker=/data/.local/.schooltools-commit
+        if [ -x /data/.local/bin/schooltools ] && [ -f "$marker" ] \
+          && [ "$(cat "$marker")" = "$SCHOOLTOOLS_COMMIT" ]; then
+          exit 0
+        fi
+        git init /tmp/schooltools-source
+        cd /tmp/schooltools-source
+        git remote add origin https://github.com/IamCoder18/schooltools.git
+        git fetch --depth=1 origin "$SCHOOLTOOLS_COMMIT"
+        git checkout --detach FETCH_HEAD
+        test "$(git rev-parse HEAD)" = "$SCHOOLTOOLS_COMMIT"
+        go mod download
+        go mod verify
+        go test -mod=readonly ./...
+        go build -mod=readonly -trimpath -ldflags '-s -w' -o /tmp/schooltools .
+        /tmp/schooltools --version
+        install -m 0755 /tmp/schooltools /data/.local/bin/.schooltools-new
+        mv /data/.local/bin/.schooltools-new /data/.local/bin/schooltools
+        printf '%s\n' "$SCHOOLTOOLS_COMMIT" > "$marker"
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: '2'
+        memory: 2Gi
+    volumeMounts:
+      - name: data
+        mountPath: /data
