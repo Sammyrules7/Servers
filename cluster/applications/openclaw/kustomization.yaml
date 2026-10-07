@@ -11,6 +11,11 @@ resources:
   - kevin-secrets.enc.yaml
   - instances.yaml
 patches:
+  - path: openai-model-patch.yaml
+    target:
+      group: openclaw.rocks
+      version: v1alpha1
+      kind: OpenClawInstance
   - path: tooling-common-patch.yaml
     target:
       group: openclaw.rocks

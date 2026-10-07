@@ -13,7 +13,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: bootstrap
-          image: docker.io/wolveix/satisfactory-server:v1.9.10
+          image: docker.io/wolveix/satisfactory-server:v1.9.11
           command: [/bin/bash, /scripts/bootstrap.sh]
           env:
             - name: ADMIN_PASSWORD

@@ -87,7 +87,9 @@
 
       # Keep the deployment CLI pinned to the same Colmena revision as the
       # hive instead of resolving github:zhaofengli/colmena on every run.
-      apps.${system}.colmena = colmena.apps.${system}.colmena // {
+      apps.${system}.colmena = {
+        type = "app";
+        program = "${colmena.packages.${system}.colmena}/bin/colmena";
         meta.description = "Deploy the NixOS cluster with Colmena";
       };
       packages.${system}.colmena = colmena.packages.${system}.colmena;

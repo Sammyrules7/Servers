@@ -41,7 +41,7 @@ spec:
                       - home
       containers:
         - name: server
-          image: docker.io/wolveix/satisfactory-server:v1.9.10
+          image: docker.io/wolveix/satisfactory-server:v1.9.11
           command: [/bin/bash, /scripts/start.sh]
           env:
             - name: MAXPLAYERS
