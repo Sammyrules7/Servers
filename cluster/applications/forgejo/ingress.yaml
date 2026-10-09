@@ -25,6 +25,10 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      # Large Git packs and LFS transfers can exceed Envoy's 15s default.
+      timeouts:
+        request: 600s
+        backendRequest: 600s
       backendRefs:
         - name: forgejo-http
           port: 3000

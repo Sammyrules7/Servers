@@ -43,7 +43,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: t3-code
-          image: nix:0/nix/store/gsnkav33nmrfzw0sk4i5m7avjzs86zhr-nix-image-t3-code.tar
+          image: nix:0/nix/store/r1d9m3nin35hid55klni5k17l80d3s3f-nix-image-t3-code.tar
           imagePullPolicy: IfNotPresent
           env:
             - name: CODEX_HOME

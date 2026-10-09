@@ -32,6 +32,10 @@ are picked up at the next pod restart. No token is embedded in the image.
 Git LFS is installed and its global filters are initialized at startup. HTTPS
 Git transfers to `forgejo.maio-tech.com` use HTTP/1.1 to avoid HTTP/2 stream
 resets through the public proxy; other hosts keep Git's default protocol.
+Inside this container, Git rewrites `https://forgejo.maio-tech.com/` to the
+in-cluster Forgejo HTTP service, keeping the public URL saved as the remote.
+Git LFS uses the same direct endpoint. A host-scoped credential helper reads the
+mounted Forgejo token when needed, without copying it into Git configuration.
 
 The image uses the host's read-only `/nix/store` and Nix daemon socket. Builds and
 substitutions therefore share the host cache, including Attic. A dedicated UID

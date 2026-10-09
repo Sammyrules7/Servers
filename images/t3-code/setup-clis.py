@@ -54,5 +54,9 @@ if __name__ == '__main__':
     # Avoid HTTP/2 stream resets on Forgejo's public proxy during pack transfers.
     run(['git', 'config', '--global', 'http.https://forgejo.maio-tech.com/.version',
          'HTTP/1.1'])
+    direct = 'http://forgejo-http.forgejo.svc.cluster.local:3000/'
+    run(['git', 'config', '--global', f'url.{direct}.insteadOf',
+         'https://forgejo.maio-tech.com/'])
+    run(['git', 'config', '--global', f'credential.{direct}.helper', 'forgejo'])
     initialize('forgejo', forgejo)
     initialize('github', github)

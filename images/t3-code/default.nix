@@ -16,9 +16,12 @@ let
     done
     exec ${pkgs.forgejo-cli}/bin/fj -H forgejo.maio-tech.com "$@"
   '';
+  forgejoCredential = pkgs.writeShellScriptBin "git-credential-forgejo" ''
+    exec ${pkgs.python3}/bin/python3 ${./git-credential-forgejo.py} "$@"
+  '';
   tools = pkgs.buildEnv {
     name = "t3-code-tools";
-    paths = [ t3 codexWithDirenv fj pkgs.tea pkgs.gh pkgs.nix pkgs.direnv pkgs.nix-direnv
+    paths = [ t3 codexWithDirenv fj forgejoCredential pkgs.tea pkgs.gh pkgs.nix pkgs.direnv pkgs.nix-direnv
       pkgs.bashInteractive pkgs.coreutils pkgs.procps pkgs.findutils pkgs.gnugrep
       pkgs.gnused pkgs.git pkgs.git-lfs pkgs.openssh pkgs.curl pkgs.cacert pkgs.ripgrep
       pkgs.jq pkgs.nodejs_24 pkgs.python3 pkgs.gnutar pkgs.gzip ];
