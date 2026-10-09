@@ -4,6 +4,9 @@ no anonymous agent access is enabled. Pair using `t3 pair` inside the pod and
 replace the printed local address with `https://t3.maio-tech.com`, preserving the
 pairing path and token. Pairing URLs are credentials.
 
+The environment advertises the friendly name `Kubernetes` from the mounted
+`/etc/machine-info`; its container hostname is the stable `kubernetes`.
+
 The Nix image resolves `t3@nightly` and `@openai/codex@latest` at startup and checks
 npm hourly. It verifies both executables before atomically selecting a new
 installation and restarting T3. Updates can interrupt active sessions. Failed

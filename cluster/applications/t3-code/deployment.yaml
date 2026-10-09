@@ -9,6 +9,14 @@ spec:
     requests:
       storage: 50Gi
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t3-code-machine-info
+data:
+  machine-info: |
+    PRETTY_HOSTNAME="Kubernetes"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,6 +33,7 @@ spec:
       labels:
         app: t3-code
     spec:
+      hostname: kubernetes
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 1773
@@ -67,6 +76,10 @@ spec:
             limits:
               memory: 8Gi
           volumeMounts:
+            - name: machine-info
+              mountPath: /etc/machine-info
+              subPath: machine-info
+              readOnly: true
             - name: cli-tokens
               mountPath: /run/cli-tokens
               readOnly: true
@@ -83,6 +96,9 @@ spec:
               mountPath: /nix/var/nix/daemon-socket
               readOnly: true
       volumes:
+        - name: machine-info
+          configMap:
+            name: t3-code-machine-info
         - name: cli-tokens
           secret:
             secretName: t3-code-cli-tokens
