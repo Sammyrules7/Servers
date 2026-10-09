@@ -50,5 +50,9 @@ def github(token):
 
 if __name__ == '__main__':
     os.umask(0o077)
+    run(['git', 'lfs', 'install', '--skip-repo'])
+    # Avoid HTTP/2 stream resets on Forgejo's public proxy during pack transfers.
+    run(['git', 'config', '--global', 'http.https://forgejo.maio-tech.com/.version',
+         'HTTP/1.1'])
     initialize('forgejo', forgejo)
     initialize('github', github)

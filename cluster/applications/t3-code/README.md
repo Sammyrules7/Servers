@@ -29,6 +29,10 @@ encrypted `cli-tokens.enc.yaml` and mounted read-only; startup initializes the
 CLI configurations under the persisted `/data/home/.config`. Token changes
 are picked up at the next pod restart. No token is embedded in the image.
 
+Git LFS is installed and its global filters are initialized at startup. HTTPS
+Git transfers to `forgejo.maio-tech.com` use HTTP/1.1 to avoid HTTP/2 stream
+resets through the public proxy; other hosts keep Git's default protocol.
+
 The image uses the host's read-only `/nix/store` and Nix daemon socket. Builds and
 substitutions therefore share the host cache, including Attic. A dedicated UID
 1773 maps to the untrusted `t3-code` host account; the pod has no Kubernetes token.
