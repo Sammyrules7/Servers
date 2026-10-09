@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: t3-code-data
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t3-code
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: t3-code
+  template:
+    metadata:
+      labels:
+        app: t3-code
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1773
+        runAsGroup: 1773
+        runAsNonRoot: true
+        fsGroup: 1773
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: t3-code
+          image: nix:0/nix/store/443gssz67dhcsn7dqa7wagyndp0lpfsx-nix-image-t3-code.tar
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CODEX_HOME
+              value: /data/home/.codex
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          ports:
+            - name: http
+              containerPort: 3773
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            # First boot may download both provider and server binaries.
+            failureThreshold: 240
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            tcpSocket:
+              port: http
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              memory: 8Gi
+          volumeMounts:
+            - name: cli-tokens
+              mountPath: /run/cli-tokens
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: data
+              mountPath: /data
+            - name: nix-gcroots
+              mountPath: /nix/var/nix/gcroots/t3-code
+            - name: nix-store
+              mountPath: /nix/store
+              readOnly: true
+            - name: nix-daemon
+              mountPath: /nix/var/nix/daemon-socket
+              readOnly: true
+      volumes:
+        - name: cli-tokens
+          secret:
+            secretName: t3-code-cli-tokens
+            defaultMode: 0440
+        - name: tmp
+          emptyDir: {}
+        - name: nix-gcroots
+          hostPath:
+            path: /nix/var/nix/gcroots/t3-code
+            type: Directory
+        - name: data
+          persistentVolumeClaim:
+            claimName: t3-code-data
+        - name: nix-store
+          hostPath:
+            path: /nix/store
+            type: Directory
+        - name: nix-daemon
+          hostPath:
+            path: /nix/var/nix/daemon-socket
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: t3-code
+spec:
+  selector:
+    app: t3-code
+  ports:
+    - name: http
+      port: 3773
+      targetPort: http

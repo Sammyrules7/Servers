@@ -30,6 +30,9 @@
     }:
     let
       system = "x86_64-linux";
+      t3Code = import ./images/t3-code {
+        pkgs = import nixpkgs { inherit system; overlays = [ nix-snapshotter.overlays.default ]; };
+      };
       commonModules = [
         sops-nix.nixosModules.sops
         nix-snapshotter.nixosModules.default
@@ -92,6 +95,11 @@
         program = "${colmena.packages.${system}.colmena}/bin/colmena";
         meta.description = "Deploy the NixOS cluster with Colmena";
       };
-      packages.${system}.colmena = colmena.packages.${system}.colmena;
+      packages.${system} = {
+        colmena = colmena.packages.${system}.colmena;
+        t3-code-image = t3Code.image;
+        t3-code-tools = t3Code.tools;
+        t3-code-root = t3Code.root;
+      };
     };
 }

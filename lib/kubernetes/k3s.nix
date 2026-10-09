@@ -1,4 +1,4 @@
-{ lib, config, sops, ... }:
+{ lib, config, sops, self, ... }:
 let
   cfg = config.k3s;
   isBootstrapMaster = config.networking.hostName == "server1";
@@ -41,6 +41,15 @@ in {
   };
 
    config = lib.mkIf cfg.enable {
+    # Keep the image and its runtime closure alive on every schedulable node.
+    environment.etc."t3-code/image".source = self.packages.x86_64-linux.t3-code-image;
+    users.groups.t3-code.gid = 1773;
+    users.users.t3-code = {
+      isSystemUser = true;
+      uid = 1773;
+      group = "t3-code";
+    };
+    systemd.tmpfiles.rules = [ "d /nix/var/nix/gcroots/t3-code 0750 t3-code t3-code -" ];
     services.k3s = {
       enable = true;
       # k3s 1.35 supports wiring nix-snapshotter into its embedded containerd.
