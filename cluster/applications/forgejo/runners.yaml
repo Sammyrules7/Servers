@@ -97,7 +97,7 @@ spec:
           podspec-luanti.yaml: |-
             automountServiceAccountToken: false
             containers:
-              - image: nix:0/nix/store/l9ss7nbiy6870vjkmf8v88qjxnv64s4j-nix-image-ci.tar
+              - image: nix:0/nix/store/k4xsk2pgksc4fy1lk2nqv0d03alx2652-nix-image-ci.tar
                 imagePullPolicy: IfNotPresent
                 name: main
                 resources:
