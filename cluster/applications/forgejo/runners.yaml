@@ -45,10 +45,10 @@ spec:
             runner:
               capacity: 4
               labels:
-                - ubuntu-latest:k8s:/config/podspec-default.yaml
-                - default:k8s:/config/podspec-default.yaml
-                - nix:k8s:/config/podspec-nix.yaml
-                - luanti:k8s:/config/podspec-luanti.yaml
+                - ubuntu-latest:k8s:///config/podspec-default.yaml
+                - default:k8s:///config/podspec-default.yaml
+                - nix:k8s:///config/podspec-nix.yaml
+                - luanti:k8s:///config/podspec-luanti.yaml
               timeout: 3h
           podspec-default.yaml: |-
             automountServiceAccountToken: false
@@ -137,8 +137,8 @@ spec:
         containers:
           runner:
             image:
-              repository: git.erwanleboucher.dev/eleboucher/runner
-              tag: 12.13.0
+              repository: data.forgejo.org/forgejo/runner
+              tag: 13.2.0
             command:
               - sh
               - -ec
