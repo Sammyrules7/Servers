@@ -45,6 +45,7 @@ spec:
         - name: t3-code
           image: nix:0/nix/store/gyfrzn8fzqndfz5p1jhzn393pi1r9k2l-nix-image-t3-code.tar
           imagePullPolicy: IfNotPresent
+          command: [/bin/python3, /etc/t3-code/runtime/start.py]
           env:
             - name: CODEX_HOME
               value: /data/home/.codex
@@ -76,6 +77,9 @@ spec:
             limits:
               memory: 8Gi
           volumeMounts:
+            - name: runtime
+              mountPath: /etc/t3-code/runtime
+              readOnly: true
             - name: machine-info
               mountPath: /etc/machine-info
               subPath: machine-info
@@ -96,6 +100,9 @@ spec:
               mountPath: /nix/var/nix/daemon-socket
               readOnly: true
       volumes:
+        - name: runtime
+          configMap:
+            name: t3-code-runtime
         - name: machine-info
           configMap:
             name: t3-code-machine-info

@@ -7,12 +7,24 @@ pairing path and token. Pairing URLs are credentials.
 The environment advertises the friendly name `Kubernetes` from the mounted
 `/etc/machine-info`; its container hostname is the stable `kubernetes`.
 
-The Nix image resolves `t3@nightly`, `@openai/codex@latest`, and `opencode-ai@dev` at startup and checks
-npm hourly. It verifies all three executables before atomically selecting a new
-installation and restarting T3. Updates can interrupt active sessions. Failed
-updates keep the installed release; first boot requires npm access. Runtime
-versions, npm's download cache, credentials, and projects persist on Longhorn.
+The supervisor resolves `t3@nightly`, `@openai/codex@latest`, and stable
+OpenCode 2 (`@opencode/cli@latest`) at startup and checks hourly. T3 and Codex
+use npm with lifecycle scripts disabled. OpenCode uses the official glibc/x86_64
+baseline binary tarball directly, verifies its published SHA-512 integrity,
+and copies only its executable; no npm install or postinstall runs for OpenCode.
+Stable OpenCode >=2.0.18 and a matching executable version are required before
+atomically activating a release. Failed updates keep the installed release;
+first boot requires registry access. Updates can interrupt active sessions.
+Runtime versions, download cache, credentials, and projects persist on Longhorn.
 Use `cat /data/runtime/current/versions.json` in the pod to inspect versions.
+
+The deployment runs the supervisor and login bootstrap from a generated
+`t3-code-runtime` ConfigMap. Its content hash changes the pod template, so Flux
+rolls out script fixes even when the base Nix image is unchanged. This prevents
+an old image's embedded updater from restoring a dev build. The existing image
+remains valid on every node; no image publication or NixOS rollout is needed
+for updater changes. The files under `runtime/` are authoritative; the image
+sources use symlinks to the same files.
 
 Codex's login and configuration are persisted at `/data/home/.codex` (explicit
 `CODEX_HOME`). T3 settings, conversations, pairing grants, and provider state
@@ -65,12 +77,20 @@ committing. All cluster nodes retain the image via `/etc/t3-code/image`; deploy
 the NixOS changes before Flux starts a pod using a new image. npm releases update
 automatically and do not require rebuilding the image or editing manifests.
 
-OpenCode is available as `opencode` in the container terminal, with approved
-project direnv environments loaded by its wrapper. This adds a standalone CLI,
-not native OpenCode provider integration in T3. The `dev` channel (not `tui-v2`)
-is unstable: hourly updates may introduce incompatible behavior and restart T3
-even when only OpenCode changes. All three binaries must pass `--version`
-before the release is activated; failures retain the previous release.
+OpenCode is available as `opencode` in the container terminal and through T3's
+OpenCode provider, with approved project direnv environments loaded by its
+wrapper. The updater tracks the stable OpenCode 2 package, not the OpenCode 1
+`opencode-ai` package or either package's `dev` channel. Dev builds report
+`0.0.0` and fail T3's minimum-version check. The baseline binary avoids an AVX2
+requirement on cluster nodes.
+
+To refresh the managed installation manually from this repository, run
+`python3 images/t3-code/runtime.py --update-only`. It returns failure if an
+update fails and serializes concurrent manual/hourly updates with a file lock.
+The `/bin/opencode` wrapper uses `/data/runtime/current`, so a separate global
+or user installation may not change which executable T3 runs. Refresh the
+OpenCode provider in T3 settings after a manual update; a Flux rollout restarts
+T3 and clears the cached version probe.
 
 OpenCode uses its default XDG locations under the existing PVC-backed
 `HOME=/data/home`: configuration at `/data/home/.config/opencode` and data,
@@ -79,15 +99,11 @@ state under HOME persist too. No OpenCode credentials are provisioned by the
 image; authenticate interactively as needed. Explicit XDG overrides can change
 these locations and should also point into persistent storage.
 
-npm lifecycle scripts remain disabled with `--ignore-scripts`. The inspected
-OpenCode dev tarball declares `bin/opencode.exe`, which its postinstall normally
-populates from a platform optional dependency. For this x86_64/glibc image the
-installer explicitly installs the matching-version
-`opencode-linux-x64-baseline` package, copies its native binary to that target,
-and creates the CLI link without executing upstream postinstall or other
-lifecycle scripts. The baseline variant avoids an AVX2 requirement. Package
-layout changes fail closed during staging; a future architecture change must
-update this platform selection and the image's ELF loader together.
+The platform package is `@opencode/cli-linux-x64-baseline` at the exact CLI
+release version. Archive corruption, incompatible or prerelease versions,
+unexpected binary layout, executable-version mismatch, and failed binary
+checks leave the previous release active. A future architecture change must
+update the platform selection and the image's ELF loader together.
 
 ### Build-only CI for the OpenCode PR
 

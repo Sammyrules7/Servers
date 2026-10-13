@@ -75,8 +75,8 @@ let
     if [ ! -e "$HOME/.config/direnv/direnvrc" ]; then
       printf 'source /etc/direnv/direnvrc\n' > "$HOME/.config/direnv/direnvrc"
     fi
-    ${pkgs.python3}/bin/python3 ${./setup-clis.py}
-    exec ${pkgs.python3}/bin/python3 ${./runtime.py}
+    ${pkgs.python3}/bin/python3 ${../../cluster/applications/t3-code/runtime/setup-clis.py}
+    exec ${pkgs.python3}/bin/python3 ${../../cluster/applications/t3-code/runtime/runtime.py}
   '';
   env = [ "PATH=/bin" "HOME=/data/home" "SHELL=/bin/bash"
     "T3CODE_HOME=/data/t3" "NIX_REMOTE=daemon" "LD_LIBRARY_PATH=${libraryPath}"
