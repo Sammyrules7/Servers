@@ -33,6 +33,9 @@
       t3Code = import ./images/t3-code {
         pkgs = import nixpkgs { inherit system; overlays = [ nix-snapshotter.overlays.default ]; };
       };
+      forgejoCi = import ./images/forgejo-ci {
+        pkgs = import nixpkgs { inherit system; overlays = [ nix-snapshotter.overlays.default ]; };
+      };
       commonModules = [
         sops-nix.nixosModules.sops
         nix-snapshotter.nixosModules.default
@@ -100,6 +103,9 @@
         t3-code-image = t3Code.image;
         t3-code-tools = t3Code.tools;
         t3-code-root = t3Code.root;
+        forgejo-ci-image = forgejoCi.image;
+        forgejo-ci-tools = forgejoCi.tools;
+        forgejo-ci-root = forgejoCi.root;
       };
     };
 }

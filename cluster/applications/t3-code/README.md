@@ -94,18 +94,18 @@ update this platform selection and the image's ELF loader together.
 `.forgejo/workflows/t3-code.yaml` reuses the existing Forgejo `nix` label and
 its Kubernetes builder pod, read-only host store, and mounted host daemon
 socket. It deliberately avoids installing another CI platform, Docker-in-Docker,
-and Node-based checkout/upload actions. The configured builder image is external
-to this repository: it must provide a shell, Git, and Nix, and its UID must be
-allowed to connect to the host daemon. The first step checks those prerequisites;
-this repository's configuration alone cannot prove that the live runner is ready.
+and Node-based checkout/upload actions. The repository-owned `forgejo-ci-image`
+provides a shell, Git, GNU tar, and Nix; its untrusted UID must be allowed to
+connect to the host daemon. See `images/forgejo-ci/README.md` for the bootstrap
+and shared-cache rollout order. Configuration alone cannot prove live readiness.
 
-Only pushes to `feat/t3-opencode-dev`, or manual dispatch on that same branch,
-run this workflow. Arbitrary pull requests/forks are not run on the host-daemon
+Only pushes to `main`, `feat/t3-opencode-dev`, or `feat/nix-snapshotter-ci`,
+or manual dispatch on one of those same branches, run this workflow. Arbitrary pull requests/forks are not run on the host-daemon
 builder. Checkout uses the automatic job token without persisting it; no Actions
 secrets or Kubernetes credentials are requested. This is a branch-scoped PR
 build, not a general untrusted-PR pipeline.
 
-CI builds `.#t3-code-tools` and `.#t3-code-image`, runs all Python regression
+CI builds `.#forgejo-ci-image`, `.#t3-code-tools`, and `.#t3-code-image`, runs all Python regression
 tests using the built tools, then evaluates the image path. It writes
 `ci-output/image-store-path.txt`, `ci-output/image-reference.txt`, and
 `ci-output/deployment.patch` in the ephemeral job workspace and prints their

@@ -67,12 +67,27 @@ spec:
                     cpu: 100m
                     memory: 256Mi
             restartPolicy: Never
+          # Built .#forgejo-ci-image reference. Publish its closure and deploy
+          # the node configuration before reconciling this runner change.
+          # Rebuild/update with images/forgejo-ci/update-reference.py.
           podspec-nix.yaml: |-
             automountServiceAccountToken: false
+            securityContext:
+              runAsUser: 1774
+              runAsGroup: 1774
+              runAsNonRoot: true
+              fsGroup: 1774
             containers:
-              - image: nix:0/nix/store/kkiqql4ai45i72s6axnms9c4v06xaibz-nix-image-vr-platform-builder-ci.tar
+              - image: nix:0/nix/store/yiclqp72gdxfmy9q1lfrrz1rdfpm1wlc-nix-image-forgejo-ci.tar
                 imagePullPolicy: IfNotPresent
                 name: main
+                env:
+                  - name: NIX_REMOTE
+                    value: daemon
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop: [ALL]
                 resources:
                   requests:
                     cpu: 100m

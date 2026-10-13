@@ -1,12 +1,12 @@
 name: T3 Code image verification
 on:
   push:
-    branches: [feat/t3-opencode-dev]
+    branches: [main, feat/t3-opencode-dev, feat/nix-snapshotter-ci]
   workflow_dispatch:
 
 jobs:
   verify:
-    if: github.ref == 'refs/heads/feat/t3-opencode-dev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/t3-opencode-dev' || github.ref == 'refs/heads/feat/nix-snapshotter-ci'
     runs-on: nix
     env:
       NIX_REMOTE: daemon
@@ -21,7 +21,7 @@ jobs:
           CI_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          for tool in git nix; do
+          for tool in git nix tar; do
             command -v "$tool" >/dev/null || { echo "Runner prerequisite missing: $tool on the nix runner"; exit 1; }
           done
           test -S /nix/var/nix/daemon-socket/socket || { echo 'Runner prerequisite missing: mounted host Nix daemon socket'; exit 1; }
@@ -35,7 +35,7 @@ jobs:
       - name: Build image and run Python regression tests
         run: |
           set -eu
-          nix build --no-link --print-out-paths .#t3-code-tools .#t3-code-image
+          nix build --no-link --print-out-paths .#forgejo-ci-image .#t3-code-tools .#t3-code-image
           tools=$(nix eval --raw .#t3-code-tools.outPath)
           PYTHONDONTWRITEBYTECODE=1 "$tools/bin/python3" -m unittest discover -s images/t3-code -p 'test_*.py' -v
       - name: Emit image reference and review-only deployment patch

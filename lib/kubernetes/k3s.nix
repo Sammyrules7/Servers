@@ -43,6 +43,14 @@ in {
    config = lib.mkIf cfg.enable {
     # Keep the image and its runtime closure alive on every schedulable node.
     environment.etc."t3-code/image".source = self.packages.x86_64-linux.t3-code-image;
+    environment.etc."forgejo-ci/image".source = self.packages.x86_64-linux.forgejo-ci-image;
+    # Jobs use a dedicated untrusted identity, not root/deploy/wheel.
+    users.groups.forgejo-ci.gid = 1774;
+    users.users.forgejo-ci = {
+      isSystemUser = true;
+      uid = 1774;
+      group = "forgejo-ci";
+    };
     users.groups.t3-code.gid = 1773;
     users.users.t3-code = {
       isSystemUser = true;
