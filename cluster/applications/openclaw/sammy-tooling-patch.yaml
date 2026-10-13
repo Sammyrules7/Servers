@@ -66,6 +66,18 @@
           install -m 0755 /tmp/forgejo-tools/tea /data/.local/bin/tea
           touch /data/.local/.tea-0.14.2
         fi
+        # Pinned upstream release; install CLI only, never provision credentials.
+        if [ ! -x /data/.local/bin/gh ] || [ ! -f /data/.local/.gh-2.102.0 ]; then
+          curl -fsSL -o /tmp/forgejo-tools/gh.tar.gz \
+            https://github.com/cli/cli/releases/download/v2.102.0/gh_2.102.0_linux_amd64.tar.gz
+          echo "bb766f710eef8ede859c18578c72c327597cd4c8a85b06001b1f3843c6019386  /tmp/forgejo-tools/gh.tar.gz" \
+            | sha256sum -c -
+          tar -xzf /tmp/forgejo-tools/gh.tar.gz -C /tmp/forgejo-tools \
+            gh_2.102.0_linux_amd64/bin/gh
+          install -m 0755 /tmp/forgejo-tools/gh_2.102.0_linux_amd64/bin/gh /data/.local/bin/gh
+          /data/.local/bin/gh --version
+          touch /data/.local/.gh-2.102.0
+        fi
         cp /tooling/forgejo-SKILL.md /data/workspace/skills/forgejo/SKILL.md
     securityContext:
       allowPrivilegeEscalation: false
