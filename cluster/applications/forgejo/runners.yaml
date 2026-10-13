@@ -99,6 +99,14 @@ spec:
                   - mountPath: /nix/var/nix/daemon-socket
                     name: nix-daemon-socket
                     readOnly: true
+                  # Nix-backed image directories are immutable; job data must
+                  # live in ephemeral volumes, writable by the untrusted UID.
+                  - mountPath: /shared/act
+                    name: workspace
+                  - mountPath: /data/home
+                    name: home
+                  - mountPath: /tmp
+                    name: temporary
             restartPolicy: Never
             volumes:
               - hostPath:
@@ -109,6 +117,12 @@ spec:
                   path: /nix/var/nix/daemon-socket
                   type: Directory
                 name: nix-daemon-socket
+              - name: workspace
+                emptyDir: {}
+              - name: home
+                emptyDir: {}
+              - name: temporary
+                emptyDir: {}
           podspec-luanti.yaml: |-
             automountServiceAccountToken: false
             containers:
