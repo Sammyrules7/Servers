@@ -1,0 +1,69 @@
+name: T3 Code image verification
+on:
+  push:
+    branches: [feat/t3-opencode-dev]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/t3-opencode-dev'
+    runs-on: nix
+    env:
+      NIX_REMOTE: daemon
+      NIX_CONFIG: 'experimental-features = nix-command flakes'
+    steps:
+      # No third-party checkout/upload actions: the builder need not contain Node.
+      - name: Check runner and fetch exact revision
+        env:
+          CI_SERVER: ${{ github.server_url }}
+          CI_REPOSITORY: ${{ github.repository }}
+          CI_SHA: ${{ github.sha }}
+          CI_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          for tool in git nix; do
+            command -v "$tool" >/dev/null || { echo "Runner prerequisite missing: $tool on the nix runner"; exit 1; }
+          done
+          test -S /nix/var/nix/daemon-socket/socket || { echo 'Runner prerequisite missing: mounted host Nix daemon socket'; exit 1; }
+          nix store ping --store daemon
+          git init .
+          git remote add origin "${CI_SERVER}/${CI_REPOSITORY}.git"
+          # Automatic job token only; never stored in the remote or credential file.
+          git -c credential.helper= -c 'credential.helper=!f() { printf "username=x-access-token\npassword=%s\n" "$CI_TOKEN"; }; f' fetch --depth=1 origin "$CI_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$CI_SHA"
+      - name: Build image and run Python regression tests
+        run: |
+          set -eu
+          nix build --no-link --print-out-paths .#t3-code-tools .#t3-code-image
+          tools=$(nix eval --raw .#t3-code-tools.outPath)
+          PYTHONDONTWRITEBYTECODE=1 "$tools/bin/python3" -m unittest discover -s images/t3-code -p 'test_*.py' -v
+      - name: Emit image reference and review-only deployment patch
+        run: |
+          set -eu
+          tools=$(nix eval --raw .#t3-code-tools.outPath)
+          mkdir -p ci-output
+          nix eval --raw .#t3-code-image.outPath > ci-output/image-store-path.txt
+          image=$(cat ci-output/image-store-path.txt)
+          test -f "$image"
+          printf 'nix:0%s\n' "$image" > ci-output/image-reference.txt
+          "$tools/bin/python3" - <<'PY'
+          import difflib
+          import pathlib
+          import re
+          name = 'cluster/applications/t3-code/deployment.yaml'
+          original = pathlib.Path(name).read_text()
+          reference = pathlib.Path('ci-output/image-reference.txt').read_text().strip()
+          updated, count = re.subn(r'(?m)^(\s*image: )nix:0/nix/store/[^\s]+$', lambda m: m[1] + reference, original)
+          if count != 1:
+              raise SystemExit('Expected exactly one T3 image reference')
+          patch = ''.join(difflib.unified_diff(original.splitlines(True), updated.splitlines(True), fromfile='a/' + name, tofile='b/' + name))
+          pathlib.Path('ci-output/deployment.patch').write_text(patch)
+          PY
+          echo '=== IMAGE STORE PATH ==='
+          cat ci-output/image-store-path.txt; echo
+          echo '=== IMAGE REFERENCE ==='
+          cat ci-output/image-reference.txt
+          echo '=== REVIEW-ONLY DEPLOYMENT PATCH (copy from this log) ==='
+          cat ci-output/deployment.patch
+          echo 'No cache publication, commit, merge, or deployment performed.'

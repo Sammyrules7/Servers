@@ -5,6 +5,9 @@ let
   codexWithDirenv = pkgs.writeShellScriptBin "codex" ''
     exec ${pkgs.direnv}/bin/direnv exec "$(pwd -P)" /data/runtime/current/node_modules/.bin/codex "$@"
   '';
+  opencodeWithDirenv = pkgs.writeShellScriptBin "opencode" ''
+    exec ${pkgs.direnv}/bin/direnv exec "$(pwd -P)" /data/runtime/current/node_modules/.bin/opencode "$@"
+  '';
   t3 = pkgs.writeShellScriptBin "t3" ''
     exec /data/runtime/current/node_modules/.bin/t3 "$@"
   '';
@@ -21,7 +24,7 @@ let
   '';
   tools = pkgs.buildEnv {
     name = "t3-code-tools";
-    paths = [ t3 codexWithDirenv fj forgejoCredential pkgs.tea pkgs.gh pkgs.nix pkgs.direnv pkgs.nix-direnv
+    paths = [ t3 codexWithDirenv opencodeWithDirenv fj forgejoCredential pkgs.tea pkgs.gh pkgs.nix pkgs.direnv pkgs.nix-direnv
       pkgs.bashInteractive pkgs.coreutils pkgs.procps pkgs.findutils pkgs.gnugrep
       pkgs.gnused pkgs.git pkgs.git-lfs pkgs.openssh pkgs.curl pkgs.cacert pkgs.ripgrep
       pkgs.jq pkgs.nodejs_24 pkgs.python3 pkgs.gnutar pkgs.gzip ];
@@ -65,7 +68,7 @@ let
   '';
   start = pkgs.writeShellScript "t3-code-start" ''
     set -e
-    mkdir -p "$HOME" "$HOME/.codex" "$HOME/.config/direnv" /data/workspace
+    mkdir -p "$HOME" "$HOME/.codex" "$HOME/.config/direnv" "$HOME/.config/opencode" "$HOME/.local/share/opencode" /data/workspace
     if [ ! -e "$HOME/.bashrc" ]; then
       printf '. /etc/bashrc\n' > "$HOME/.bashrc"
     fi

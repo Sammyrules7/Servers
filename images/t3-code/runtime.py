@@ -16,7 +16,8 @@ child = None
 
 def refresh():
     versions = {}
-    for package, tag in (("t3", "nightly"), ("@openai/codex", "latest")):
+    for package, tag in (("t3", "nightly"), ("@openai/codex", "latest"),
+                         ("opencode-ai", "dev")):
         with urllib.request.urlopen(f"https://registry.npmjs.org/{package}/{tag}", timeout=30) as response:
             versions[package] = json.load(response)["version"]
     current = RUNTIME / "current"
@@ -29,9 +30,26 @@ def refresh():
         subprocess.run([
             "npm", "install", "--prefix", str(stage), "--no-audit", "--no-fund",
             "--ignore-scripts", f"t3@{versions['t3']}", f"@openai/codex@{versions['@openai/codex']}",
+            f"opencode-ai@{versions['opencode-ai']}",
+            f"opencode-linux-x64-baseline@{versions['opencode-ai']}",
         ], check=True, timeout=900)
+        # OpenCode's bin is populated by postinstall, not shipped as a runnable
+        # CLI. Keep ALL npm lifecycle scripts disabled; reproduce only the copy
+        # from the explicitly installed glibc/x86_64 baseline package. Baseline
+        # avoids requiring AVX2 on any cluster node. Do not run upstream scripts.
+        source = stage / "node_modules/opencode-linux-x64-baseline/bin/opencode"
+        target = stage / "node_modules/opencode-ai/bin/opencode.exe"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.unlink(missing_ok=True)
+        shutil.copyfile(source, target)
+        target.chmod(0o755)
+        # npm may omit the bin link when its target is absent with ignore-scripts.
+        binary_link = stage / "node_modules/.bin/opencode"
+        binary_link.parent.mkdir(parents=True, exist_ok=True)
+        binary_link.unlink(missing_ok=True)
+        binary_link.symlink_to("../opencode-ai/bin/opencode.exe")
         # A release must run in this Nix environment before replacing the current one.
-        for binary in ("t3", "codex"):
+        for binary in ("t3", "codex", "opencode"):
             subprocess.run([str(stage / "node_modules/.bin" / binary), "--version"], check=True, timeout=60)
         (stage / "versions.json").write_text(json.dumps(versions))
         link = RUNTIME / "next"
