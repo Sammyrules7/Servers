@@ -4,8 +4,9 @@
     "config:recommended"
   ],
   "ignorePaths": [
-    "**/flake.nix",
-    "**/flake.lock"
+    "**/*.nix",
+    "**/flake.lock",
+    "**/*.enc.yaml"
   ],
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
@@ -27,6 +28,64 @@
         "kubernetes"
       ],
       "groupName": "Kubernetes dependencies"
+    },
+    {
+      "description": "OCI Helm charts use SemVer ranges, not Docker tag versioning.",
+      "matchManagers": [
+        "flux"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "versioning": "helm",
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Let Renovate propose explicit Helm chart versions, including major upgrades.",
+      "matchManagers": [
+        "flux"
+      ],
+      "matchDatasources": [
+        "helm"
+      ],
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Track digest changes for floating container image tags.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "pinDigests": true,
+      "matchManagers": [
+        "kubernetes",
+        "custom.regex"
+      ]
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/openclaw/openclaw",
+        "@openclaw/discord"
+      ],
+      "groupName": "OpenClaw"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/openclaw/openclaw"
+      ],
+      "pinDigests": false
+    },
+    {
+      "description": "Nix store images are rebuilt by Nix, not fetched from a Docker registry.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/^nix(?::|$)/"
+      ],
+      "enabled": false
     },
     {
       "matchManagers": [
@@ -57,6 +116,112 @@
       "depNameTemplate": "IamCoder18/schooltools",
       "packageNameTemplate": "https://github.com/IamCoder18/schooltools.git",
       "datasourceTemplate": "git-refs"
+    },
+    {
+      "customType": "regex",
+      "description": "Container images in JSON patches without apiVersion/kind.",
+      "managerFilePatterns": [
+        "/(^|/)cluster/.+-patch\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "image:\\s*[\"']?(?<depName>[a-z0-9./_-]+):(?<currentValue>[a-zA-Z0-9_.-]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "OpenClaw custom resource container images.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/instances\\.yaml$/"
+      ],
+      "matchStrings": [
+        "repository:\\s*(?<depName>[^\\s]+)\\s+tag:\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "docker",
+      "autoReplaceStringTemplate": "repository: {{depName}}\n    tag: \"{{newValue}}\""
+    },
+    {
+      "customType": "regex",
+      "description": "OpenClaw npm plugins.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/instances\\.yaml$/"
+      ],
+      "matchStrings": [
+        "npm:(?<depName>@[^/\\s]+/[^@\\s]+)@(?<currentValue>[^\"\\s]+)"
+      ],
+      "datasourceTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "description": "Microsoft 365 CLI installer and its cache marker.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/m365-tooling-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "if \\[ ! -f /data/\\.local/\\.m365-(?<currentValue>[0-9.]+) \\]; then[\\s\\S]*?\\n        fi"
+      ],
+      "depNameTemplate": "@pnp/cli-microsoft365",
+      "datasourceTemplate": "npm",
+      "autoReplaceStringTemplate": "{{{replace currentValue newValue replaceString}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "jq release URLs, checksum, and cache markers updated together.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/tooling-common-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "if [^\\n]* /data/\\.local/\\.jq-[^\\n]*; then[\\s\\S]*?https://github\\.com/jqlang/jq/releases/download/(?<currentValue>jq-[0-9.]+)/[^\\n]+\\n\\s*echo \"(?<currentDigest>[a-f0-9]{64})[\\s\\S]*?\\n[ \\t]*fi"
+      ],
+      "depNameTemplate": "jqlang/jq",
+      "datasourceTemplate": "github-release-attachments",
+      "versioningTemplate": "regex:^jq-(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$",
+      "autoReplaceStringTemplate": "{{{replace currentDigest newDigest (replace (replace '^(v|jq-)' '' currentValue) (replace '^(v|jq-)' '' newValue) replaceString)}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "gog release URLs, checksum, and cache markers updated together.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/tooling-common-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "if [^\\n]* /data/\\.local/\\.gog-[^\\n]*; then[\\s\\S]*?https://github\\.com/steipete/gogcli/releases/download/(?<currentValue>v[0-9.]+)/[^\\n]+\\n\\s*echo \"(?<currentDigest>[a-f0-9]{64})[\\s\\S]*?\\n[ \\t]*fi"
+      ],
+      "depNameTemplate": "steipete/gogcli",
+      "datasourceTemplate": "github-release-attachments",
+      "versioningTemplate": "semver",
+      "autoReplaceStringTemplate": "{{{replace currentDigest newDigest (replace (replace '^(v|jq-)' '' currentValue) (replace '^(v|jq-)' '' newValue) replaceString)}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "gh release URLs, checksum, and cache markers updated together.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/sammy-tooling-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "if [^\\n]* /data/\\.local/\\.gh-[^\\n]*; then[\\s\\S]*?https://github\\.com/cli/cli/releases/download/(?<currentValue>v[0-9.]+)/[^\\n]+\\n\\s*echo \"(?<currentDigest>[a-f0-9]{64})[\\s\\S]*?\\n[ \\t]*fi"
+      ],
+      "depNameTemplate": "cli/cli",
+      "datasourceTemplate": "github-release-attachments",
+      "versioningTemplate": "semver",
+      "autoReplaceStringTemplate": "{{{replace currentDigest newDigest (replace (replace '^(v|jq-)' '' currentValue) (replace '^(v|jq-)' '' newValue) replaceString)}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Tea release URLs and cache markers; the installer verifies upstream checksums.",
+      "managerFilePatterns": [
+        "/^cluster/applications/openclaw/sammy-tooling-patch\\.yaml$/"
+      ],
+      "matchStrings": [
+        "if \\[ ! -f /data/\\.local/\\.tea-[^\\n]*; then[\\s\\S]*?https://gitea\\.com/gitea/tea/releases/download/(?<currentValue>v[0-9.]+)/[^\\n]+[\\s\\S]*?\\n        fi"
+      ],
+      "depNameTemplate": "gitea/tea",
+      "datasourceTemplate": "gitea-releases",
+      "registryUrlTemplate": "https://gitea.com",
+      "autoReplaceStringTemplate": "{{{replace (replace '^v' '' currentValue) (replace '^v' '' newValue) replaceString}}}"
     }
-  ]
+  ],
+  "nix": {
+    "enabled": false
+  }
 }

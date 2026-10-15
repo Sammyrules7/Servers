@@ -10,10 +10,11 @@
     args:
       - |
         mkdir -p /data/.local/bin /data/.local/share /data/.local/share/gopath
-        if [ ! -f /data/.local/.go-1.26.5 ]; then
+        go_version="$(/usr/local/go/bin/go env GOVERSION)"
+        if [ ! -f "/data/.local/.${go_version}" ]; then
           rm -rf /data/.local/share/go
           cp -a /usr/local/go /data/.local/share/go
-          touch /data/.local/.go-1.26.5
+          touch "/data/.local/.${go_version}"
         fi
         printf '%s\n' \
           '#!/bin/sh' \
@@ -61,8 +62,11 @@
         if [ ! -f /data/.local/.tea-0.14.2 ]; then
           curl -fsSL -o /tmp/forgejo-tools/tea \
             https://gitea.com/gitea/tea/releases/download/v0.14.2/tea-0.14.2-linux-amd64
-          echo "be4ab135752825ab223cfa87d30e7f328312a24120b70176b67c1bd4aba19cc3  /tmp/forgejo-tools/tea" \
-            | sha256sum -c -
+          curl -fsSL -o /tmp/forgejo-tools/tea-checksums.txt \
+            https://gitea.com/gitea/tea/releases/download/v0.14.2/checksums.txt
+          tea_sha256="$(awk '$2 == "tea-0.14.2-linux-amd64" { print $1 }' /tmp/forgejo-tools/tea-checksums.txt)"
+          test "${#tea_sha256}" -eq 64
+          echo "${tea_sha256}  /tmp/forgejo-tools/tea" | sha256sum -c -
           install -m 0755 /tmp/forgejo-tools/tea /data/.local/bin/tea
           touch /data/.local/.tea-0.14.2
         fi
