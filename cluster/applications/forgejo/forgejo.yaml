@@ -75,7 +75,8 @@ spec:
           MINIO_BUCKET: "forgejo"
           MINIO_USE_SSL: true
         service:
-          DISABLE_REGISTRATION: false
+          # Accounts are provisioned by an admin; runner access implies host Nix access.
+          DISABLE_REGISTRATION: true
           ENABLE_INTERNAL_SIGNIN: false
           ENABLE_BASIC_AUTHENTICATION: false
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
@@ -86,10 +87,12 @@ spec:
           HOST: '{"size":100, "recent_ratio":0.25, "ghost_ratio":0.5}'
         oauth2_client:
           ACCOUNT_LINKING: auto
-          ENABLE_AUTO_REGISTRATION: true
+          ENABLE_AUTO_REGISTRATION: false
           USERNAME: nickname
         repository:
           DEFAULT_BRANCH: "main"
+          # Forgejo 15 has no per-user Actions permission. Trusted repo admins opt in.
+          DEFAULT_REPO_UNITS: "repo.code,repo.releases,repo.issues,repo.pulls,repo.wiki,repo.projects,repo.packages"
           DISABLE_HTTP_GIT: false
           MAX_CREATION_LIMIT: 0
           ALLOW_FORK_WITHOUT_MAXIMUM_LIMIT: true
