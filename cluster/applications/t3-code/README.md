@@ -45,9 +45,21 @@ Git LFS is installed and its global filters are initialized at startup. HTTPS
 Git transfers to `forgejo.maio-tech.com` use HTTP/1.1 to avoid HTTP/2 stream
 resets through the public proxy; other hosts keep Git's default protocol.
 Inside this container, Git rewrites `https://forgejo.maio-tech.com/` to the
-in-cluster Forgejo HTTP service, keeping the public URL saved as the remote.
-Git LFS uses the same direct endpoint. A host-scoped credential helper reads the
-mounted Forgejo token when needed, without copying it into Git configuration.
+in-cluster Forgejo HTTP service, keeping the public URL saved in
+`remote.origin.url`. Git LFS uses the same direct endpoint. A host-scoped
+credential helper reads the mounted Forgejo token when needed, without copying
+it into Git configuration.
+
+`git remote get-url` (and `git remote -v`), not `remote.origin.url`, is what T3
+reads to decide which Forgejo server a repository lives on, and it reports the
+rewritten in-cluster endpoint. T3 resolves that host against `fj`/`tea` logins,
+so the token is registered for both `https://forgejo.maio-tech.com` and
+`http://forgejo-http.forgejo.svc.cluster.local:3000`. Without the second login
+T3's Forgejo provider fails with "No matching Forgejo login" and pull request
+lookups and automatic thread settlement are skipped. The gateway cannot serve
+this instead: it enforces Cloudflare Authenticated Origin Pulls, so only
+Cloudflare may connect to it, and a plain `hostAliases` would hijack the public
+hostname for every port and tool in the pod.
 
 The image uses the host's read-only `/nix/store` and Nix daemon socket. Builds and
 substitutions therefore share the host cache, including Attic. A dedicated UID
