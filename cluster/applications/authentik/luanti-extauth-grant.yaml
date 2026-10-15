@@ -1,0 +1,20 @@
+# Allows the Luanti Gateway ext-auth check and outpost-callback route to
+# reach authentik-server across namespaces. Without this, Envoy rejects
+# the backendRefs in Luanti's gateway-api.yaml / SecurityPolicy.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: luanti-extauth
+  namespace: authentik
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: luanti
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: luanti
+  to:
+    - group: ""
+      kind: Service
+      name: authentik-server
