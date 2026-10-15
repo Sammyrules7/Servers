@@ -8,3 +8,4 @@ resources:
   - longhorn-servicemonitor.yaml
   - longhorn-dashboard-configmap.yaml
   - server4-write-fence.yaml
+  - snapshot-cleanup.yaml

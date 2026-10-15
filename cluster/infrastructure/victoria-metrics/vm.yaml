@@ -26,6 +26,8 @@ spec:
   values:
     vmsingle:
       spec:
+        # OSS VictoriaMetrics: reduce retained data; downsampling is enterprise-only.
+        retentionPeriod: "14d"
         resources:
           requests:
             cpu: 150m
@@ -35,6 +37,8 @@ spec:
             memory: 2Gi
     vmagent:
       spec:
+        # Reduce ingestion and storage churn from the chart's 20s default.
+        scrapeInterval: 60s
         externalLabels:
           Dum: "mmy"
     grafana:

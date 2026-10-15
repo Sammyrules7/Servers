@@ -85,6 +85,11 @@ in {
     environment.etc."rancher/k3s/config.yaml".text = lib.mkMerge [
       ''
         flannel-iface: tailscale0
+        kubelet-arg:
+          # Avoid deleting and pulling recently used OCI images during churn.
+          - image-minimum-gc-age=1h
+          - container-log-max-size=10Mi
+          - container-log-max-files=3
       ''
       (lib.optionalString (cfg.nodeLabels != {})
         (let

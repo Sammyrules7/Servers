@@ -1,0 +1,14 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: daily-snapshot-cleanup
+  namespace: longhorn-system
+spec:
+  name: daily-snapshot-cleanup
+  # Purge only snapshots already marked for deletion; do not expire user snapshots.
+  task: snapshot-cleanup
+  cron: "30 3 * * *"
+  retain: 0
+  concurrency: 1
+  groups:
+    - default
