@@ -7,3 +7,4 @@ resources:
   - ingress.yaml
   - oauth-secret.enc.yaml
   - ./prometheus-crds
+  - smart.yaml

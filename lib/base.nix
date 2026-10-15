@@ -16,6 +16,7 @@
     ./nix-gc.nix
     ./nix.nix
     ./tailscale.nix
+    ./smart.nix
     ./zram.nix
     ./kubernetes/k3s.nix
     ./kubernetes/longhorn.nix
