@@ -8,6 +8,8 @@ spec:
     - name: infrastructure
     - name: main-instances
   interval: 5m
+  wait: true
+  timeout: 15m
   path: ./cluster/applications
   prune: true
   sourceRef:

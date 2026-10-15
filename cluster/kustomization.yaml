@@ -6,3 +6,34 @@ resources:
   - main-instances.yaml
   - applications.yaml
   - satisfactory.yaml
+# Keep generated bootstrap manifests intact and exclude the root from its own checks.
+patches:
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: flux-system
+      namespace: flux-system
+    patch: |-
+      - op: add
+        path: /spec/timeout
+        value: 60m
+      - op: add
+        path: /spec/healthChecks
+        value:
+          - apiVersion: kustomize.toolkit.fluxcd.io/v1
+            kind: Kustomization
+            name: infrastructure
+            namespace: flux-system
+          - apiVersion: kustomize.toolkit.fluxcd.io/v1
+            kind: Kustomization
+            name: main-instances
+            namespace: flux-system
+          - apiVersion: kustomize.toolkit.fluxcd.io/v1
+            kind: Kustomization
+            name: applications
+            namespace: flux-system
+          - apiVersion: kustomize.toolkit.fluxcd.io/v1
+            kind: Kustomization
+            name: satisfactory
+            namespace: flux-system
