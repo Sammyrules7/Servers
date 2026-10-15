@@ -4,6 +4,7 @@ namespace: t3-code
 resources:
   - cli-tokens.enc.yaml
   - namespace.yaml
+  - rbac.yaml
   - deployment.yaml
   - ingress.yaml
 configMapGenerator:

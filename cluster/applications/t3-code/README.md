@@ -51,7 +51,8 @@ mounted Forgejo token when needed, without copying it into Git configuration.
 
 The image uses the host's read-only `/nix/store` and Nix daemon socket. Builds and
 substitutions therefore share the host cache, including Attic. A dedicated UID
-1773 maps to the untrusted `t3-code` host account; the pod has no Kubernetes token.
+1773 maps to the untrusted `t3-code` host account; the pod mounts its `t3-code`
+service account token with full cluster permissions except Secrets.
 Nix builds run in the host daemon's sandbox. The daemon connection intentionally
 lets approved coding sessions request host builds.
 

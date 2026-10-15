@@ -24,7 +24,7 @@ let
   '';
   tools = pkgs.buildEnv {
     name = "t3-code-tools";
-    paths = [ t3 codexWithDirenv opencodeWithDirenv fj forgejoCredential pkgs.tea pkgs.gh pkgs.nix pkgs.direnv pkgs.nix-direnv
+    paths = [ t3 codexWithDirenv opencodeWithDirenv fj forgejoCredential pkgs.tea pkgs.gh pkgs.kubectl pkgs.fluxcd pkgs.nix pkgs.direnv pkgs.nix-direnv
       pkgs.bashInteractive pkgs.coreutils pkgs.procps pkgs.findutils pkgs.gnugrep
       pkgs.gnused pkgs.git pkgs.git-lfs pkgs.openssh pkgs.curl pkgs.cacert pkgs.ripgrep
       pkgs.jq pkgs.nodejs_24 pkgs.python3 pkgs.gnutar pkgs.gzip ];

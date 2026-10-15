@@ -34,7 +34,8 @@ spec:
         app: t3-code
     spec:
       hostname: kubernetes
-      automountServiceAccountToken: false
+      serviceAccountName: t3-code
+      automountServiceAccountToken: true
       securityContext:
         runAsUser: 1773
         runAsGroup: 1773
