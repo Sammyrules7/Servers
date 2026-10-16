@@ -1,0 +1,14 @@
+# The pod answers Forgejo's public name itself, so it has to present a
+# certificate that its own Git, fj, tea and curl accept. The cluster issuer
+# already publishes this zone's records through the Cloudflare solver.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: t3-code-forgejo
+spec:
+  secretName: t3-code-forgejo-tls
+  dnsNames:
+    - forgejo.maio-tech.com
+  issuerRef:
+    name: lets-encrypt-issuer
+    kind: ClusterIssuer
