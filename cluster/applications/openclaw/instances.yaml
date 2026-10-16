@@ -12,7 +12,7 @@ spec:
         name: sammy-env
   image:
     repository: ghcr.io/openclaw/openclaw
-    tag: "2026.7.1"
+    tag: "2026.10.4"
     pullPolicy: IfNotPresent
   chromium:
     enabled: true
@@ -70,7 +70,7 @@ spec:
         alsoAllow:
           - browser
   plugins:
-    - "npm:@openclaw/discord@2026.7.1"
+    - "npm:@openclaw/discord@2026.10.4"
   runtimeDeps:
     pnpm: true
     python: true
@@ -140,7 +140,7 @@ spec:
         name: georgie-env
   image:
     repository: ghcr.io/openclaw/openclaw
-    tag: "2026.7.1"
+    tag: "2026.10.4"
     pullPolicy: IfNotPresent
   chromium:
     enabled: true
@@ -242,7 +242,7 @@ spec:
         name: kevin-env
   image:
     repository: ghcr.io/openclaw/openclaw
-    tag: "2026.7.1"
+    tag: "2026.10.4"
     pullPolicy: IfNotPresent
   chromium:
     enabled: true

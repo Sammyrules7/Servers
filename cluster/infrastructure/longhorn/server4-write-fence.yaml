@@ -46,7 +46,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: fence
-              image: docker.io/alpine/kubectl:1.34.1@sha256:8413f8890d19aa03f63851654f642957e65ba59654b0c9357ddc6ec0b05b63a6
+              image: docker.io/alpine/kubectl:1.37.1@sha256:b568e8beb6a79aee269c142343078a278b85e7710f1c0e7d8d6b21d1eb566a48
               command: [/bin/sh, -ec]
               args:
                 - |

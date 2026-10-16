@@ -2,7 +2,7 @@
   path: /spec/initContainers/-
   value:
     name: install-go
-    image: golang:1.26.5-bookworm
+    image: golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
     imagePullPolicy: IfNotPresent
     command:
       - sh
@@ -51,7 +51,7 @@
   path: /spec/initContainers/-
   value:
     name: install-forgejo-tools
-    image: curlimages/curl:8.16.0
+    image: curlimages/curl:8.23.0@sha256:a134550be58ab783810e613ae96fd253c38f7bdd16d9bf9be350700c7a29ac06
     imagePullPolicy: IfNotPresent
     command:
       - sh
@@ -59,16 +59,16 @@
     args:
       - |
         mkdir -p /data/.local/bin /data/workspace/skills/forgejo /tmp/forgejo-tools
-        if [ ! -f /data/.local/.tea-0.14.2 ]; then
+        if [ ! -f /data/.local/.tea-0.16.0 ]; then
           curl -fsSL -o /tmp/forgejo-tools/tea \
-            https://gitea.com/gitea/tea/releases/download/v0.14.2/tea-0.14.2-linux-amd64
+            https://gitea.com/gitea/tea/releases/download/v0.16.0/tea-0.16.0-linux-amd64
           curl -fsSL -o /tmp/forgejo-tools/tea-checksums.txt \
-            https://gitea.com/gitea/tea/releases/download/v0.14.2/checksums.txt
-          tea_sha256="$(awk '$2 == "tea-0.14.2-linux-amd64" { print $1 }' /tmp/forgejo-tools/tea-checksums.txt)"
+            https://gitea.com/gitea/tea/releases/download/v0.16.0/checksums.txt
+          tea_sha256="$(awk '$2 == "tea-0.16.0-linux-amd64" { print $1 }' /tmp/forgejo-tools/tea-checksums.txt)"
           test "${#tea_sha256}" -eq 64
           echo "${tea_sha256}  /tmp/forgejo-tools/tea" | sha256sum -c -
           install -m 0755 /tmp/forgejo-tools/tea /data/.local/bin/tea
-          touch /data/.local/.tea-0.14.2
+          touch /data/.local/.tea-0.16.0
         fi
         # Pinned upstream release; install CLI only, never provision credentials.
         if [ ! -x /data/.local/bin/gh ] || [ ! -f /data/.local/.gh-2.102.0 ]; then

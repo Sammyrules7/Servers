@@ -3,14 +3,14 @@
   path: /spec/initContainers/-
   value:
     name: install-schooltools
-    image: golang:1.26.5-bookworm
+    image: golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
     imagePullPolicy: IfNotPresent
     command:
       - sh
       - -ec
     args:
       - |
-        SCHOOLTOOLS_COMMIT=51bb17f95df33b00c40bcf69e07e1d2712e6bcaf
+        SCHOOLTOOLS_COMMIT=aa410e2e4aab80f76be497fba3bb638c133f26fc
         export HOME=/tmp/schooltools-home
         export GOPATH=/tmp/schooltools-go
         export GOCACHE=/tmp/schooltools-cache

@@ -2,7 +2,7 @@
   path: /spec/initContainers/-
   value:
     name: install-microsoft365-tools
-    image: node:22-bookworm-slim
+    image: node:24-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5
     imagePullPolicy: IfNotPresent
     command:
       - sh
@@ -10,9 +10,9 @@
     args:
       - |
         mkdir -p /data/.local /data/workspace/skills/microsoft-365-cli
-        if [ ! -f /data/.local/.m365-11.9.0 ]; then
-          npm install --global --prefix /data/.local @pnp/cli-microsoft365@11.9.0
-          touch /data/.local/.m365-11.9.0
+        if [ ! -f /data/.local/.m365-11.11.0 ]; then
+          npm install --global --prefix /data/.local @pnp/cli-microsoft365@11.11.0
+          touch /data/.local/.m365-11.11.0
         fi
         cp /tooling/m365-SKILL.md \
           /data/workspace/skills/microsoft-365-cli/SKILL.md
