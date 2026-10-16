@@ -1,7 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "group:all"
   ],
   "ignorePaths": [
     "**/*.nix",
@@ -22,13 +23,6 @@
     ]
   },
   "packageRules": [
-    {
-      "matchManagers": [
-        "flux",
-        "kubernetes"
-      ],
-      "groupName": "Kubernetes dependencies"
-    },
     {
       "description": "OCI Helm charts use SemVer ranges, not Docker tag versioning.",
       "matchManagers": [
@@ -62,13 +56,6 @@
       ]
     },
     {
-      "matchPackageNames": [
-        "ghcr.io/openclaw/openclaw",
-        "@openclaw/discord"
-      ],
-      "groupName": "OpenClaw"
-    },
-    {
       "matchManagers": [
         "custom.regex"
       ],
@@ -99,8 +86,7 @@
       ],
       "automerge": true,
       "automergeType": "pr",
-      "platformAutomerge": false,
-      "groupName": "schooltools"
+      "platformAutomerge": false
     }
   ],
   "customManagers": [
