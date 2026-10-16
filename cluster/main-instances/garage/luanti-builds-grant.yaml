@@ -1,0 +1,17 @@
+# Allows Luanti's media origin route to reach the garage website endpoint
+# across namespaces. Without this, Envoy rejects the backendRef and
+# /luanti/media/* (oversize game media) stops serving.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: luanti-builds-origin
+  namespace: garage-cluster
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: luanti
+  to:
+    - group: ""
+      kind: Service
+      name: garage-main-cluster

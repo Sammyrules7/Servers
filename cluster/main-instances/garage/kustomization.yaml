@@ -7,3 +7,4 @@ resources:
   - vmscrape.yaml
   - garage-token.yaml
   - ingress.yaml
+  - luanti-builds-grant.yaml
