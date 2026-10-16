@@ -1,0 +1,17 @@
+# Allows Luanti's garage bucket/key (namespace luanti) to reference the
+# shared garage cluster. Without this, the operator's admission webhook
+# rejects the cross-namespace clusterRef.
+apiVersion: garage.rajsingh.info/v1beta1
+kind: GarageReferenceGrant
+metadata:
+  name: luanti-bucket
+  namespace: garage-cluster
+spec:
+  from:
+    - kind: GarageBucket
+      namespace: luanti
+    - kind: GarageKey
+      namespace: luanti
+  to:
+    - kind: GarageCluster
+      name: garage-main-cluster
