@@ -4,16 +4,30 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import time
 
 FORGEJO_HOST = 'forgejo.maio-tech.com'
-# The global url.<cluster>.insteadOf rewrite (below) makes `git remote get-url`
-# report the in-cluster service. T3's Forgejo provider resolves a repository's
-# server from that output and matches it against fj/tea logins, so the token
-# must also be registered for this host or those logins never match.
-FORGEJO_CLUSTER_HOST = 'forgejo-http.forgejo.svc.cluster.local:3000'
+GITHUB_HOST = 'github.com'
+TOKEN_DIRECTORY = Path('/run/cli-tokens')
 # Bump when the configuration commands change so already-provisioned pods
 # reconfigure once instead of trusting a stale marker.
-CONFIG_REVISION = 2
+CONFIG_REVISION = 3
+# Earlier revisions rewrote Git to the in-cluster service so transfers stayed off
+# the public proxy. `git remote get-url` reports the rewritten URL, and T3 derives
+# a repository's change-request host from it, so the rewrite made T3 look for a
+# host that no pull request link uses. The pod now answers the public name itself
+# (forward-forgejo.py); these keys are removed from homes that already carry them.
+LEGACY_CLUSTER_HOST = 'forgejo-http.forgejo.svc.cluster.local:3000'
+STALE_GIT_KEYS = (
+    f'url.http://{LEGACY_CLUSTER_HOST}/.insteadOf',
+    f'credential.http://{LEGACY_CLUSTER_HOST}/.helper',
+    f'http.https://{FORGEJO_HOST}/.version',
+)
+# Git asks a URL-scoped helper for a password only for that host. The helper baked
+# into the image answers for the retired in-cluster endpoint, so declare the
+# equivalent here rather than requiring an image rebuild.
+FORGEJO_HELPER = ('!f() { echo username=token; echo "password=$(cat '
+                  + str(TOKEN_DIRECTORY / 'forgejo-token') + ')"; }; f')
 
 
 def run(command, **kwargs):
@@ -25,26 +39,24 @@ def credential_digest(token):
     return hashlib.sha256(f'{CONFIG_REVISION}\0{token}'.encode()).hexdigest()
 
 
-def forgejo_keys_path():
-    """fj's application-token store, matched to directories::ProjectDirs."""
-    data_home = os.environ.get('XDG_DATA_HOME')
-    base = Path(data_home) if data_home and Path(data_home).is_absolute() else Path.home() / '.local/share'
-    return base / 'forgejo-cli' / 'keys.json'
+def configure_git():
+    run(['git', 'lfs', 'install', '--skip-repo'])
+    for key in STALE_GIT_KEYS:
+        subprocess.run(['git', 'config', '--global', '--unset-all', key],
+                       check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    run(['git', 'config', '--global', f'credential.https://{FORGEJO_HOST}.helper',
+         FORGEJO_HELPER])
 
 
-def merge_cluster_login(path, token):
-    """Add the in-cluster host while leaving fj's alias table untouched.
+def initialize(name, configure, attempts=6, delay=5):
+    """Provision a login once per credential, tolerating a briefly unavailable server.
 
-    `fj auth add-token` reassigns the `git.<host>` SSH alias to the newest host,
-    which breaks alias-based resolution, so record the extra host in place.
+    `forgejo.maio-tech.com` is answered by this pod's own forwarder, which may
+    still be starting, and either server can refuse for a moment. A failed attempt
+    leaves the marker absent, so the next start retries instead of holding the pod
+    in a crash loop while Git and T3 are otherwise usable.
     """
-    keys = json.loads(path.read_text()) if path.exists() else {}
-    keys.setdefault('hosts', {})[FORGEJO_CLUSTER_HOST] = {'type': 'Application', 'token': token}
-    path.write_text(json.dumps(keys, indent=2) + '\n')
-
-
-def initialize(name, configure):
-    secret = Path('/run/cli-tokens') / f'{name}-token'
+    secret = TOKEN_DIRECTORY / f'{name}-token'
     if not secret.exists():
         return
     token = secret.read_text().strip()
@@ -56,15 +68,23 @@ def initialize(name, configure):
     digest = credential_digest(token)
     if marker.exists() and marker.read_text() == digest:
         return
-    configure(token)
-    marker.write_text(digest)
-    marker.chmod(0o600)
-    print(f'Configured persisted {name} CLI login', flush=True)
+    for attempt in range(1, attempts + 1):
+        try:
+            configure(token)
+        except (subprocess.CalledProcessError, OSError) as error:
+            print(f'Could not configure the {name} CLI (attempt {attempt}/{attempts}): {error}',
+                  flush=True)
+            time.sleep(delay)
+            continue
+        marker.write_text(digest)
+        marker.chmod(0o600)
+        print(f'Configured persisted {name} CLI login', flush=True)
+        return
+    print(f'The {name} CLI login is not configured; the next start retries', flush=True)
 
 
 def forgejo(token):
     run(['fj', 'auth', 'add-token'], input=token + '\n', text=True)
-    merge_cluster_login(forgejo_keys_path(), token)
     logins = subprocess.run(['tea', 'login', 'list', '--output', 'json'],
                             check=True, capture_output=True, text=True)
     if any(login.get('name') == 'maio-tech' for login in json.loads(logins.stdout or '[]')):
@@ -76,20 +96,13 @@ def forgejo(token):
 
 
 def github(token):
-    run(['gh', 'auth', 'login', '--hostname', 'github.com', '--git-protocol', 'https',
+    run(['gh', 'auth', 'login', '--hostname', GITHUB_HOST, '--git-protocol', 'https',
          '--insecure-storage', '--with-token'], input=token + '\n', text=True)
-    run(['gh', 'auth', 'setup-git', '--hostname', 'github.com'])
+    run(['gh', 'auth', 'setup-git', '--hostname', GITHUB_HOST])
 
 
 if __name__ == '__main__':
     os.umask(0o077)
-    run(['git', 'lfs', 'install', '--skip-repo'])
-    # Avoid HTTP/2 stream resets on Forgejo's public proxy during pack transfers.
-    run(['git', 'config', '--global', 'http.https://forgejo.maio-tech.com/.version',
-         'HTTP/1.1'])
-    direct = 'http://forgejo-http.forgejo.svc.cluster.local:3000/'
-    run(['git', 'config', '--global', f'url.{direct}.insteadOf',
-         'https://forgejo.maio-tech.com/'])
-    run(['git', 'config', '--global', f'credential.{direct}.helper', 'forgejo'])
+    configure_git()
     initialize('forgejo', forgejo)
     initialize('github', github)

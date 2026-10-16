@@ -66,17 +66,12 @@ let
     EOF
     ln -s ${pkgs.cacert}/etc/ssl $out/etc/ssl
   '';
+  # The deployment runs the ConfigMap copy of start.py (see kustomization.yaml) so
+  # runtime changes roll without an image rebuild. Delegate to that copy rather
+  # than baking a second bootstrap that would drift from the host model the pod
+  # depends on, which mount-time hostAliases make unforgiving.
   start = pkgs.writeShellScript "t3-code-start" ''
-    set -e
-    mkdir -p "$HOME" "$HOME/.codex" "$HOME/.config/direnv" "$HOME/.config/opencode" "$HOME/.local/share/opencode" /data/workspace
-    if [ ! -e "$HOME/.bashrc" ]; then
-      printf '. /etc/bashrc\n' > "$HOME/.bashrc"
-    fi
-    if [ ! -e "$HOME/.config/direnv/direnvrc" ]; then
-      printf 'source /etc/direnv/direnvrc\n' > "$HOME/.config/direnv/direnvrc"
-    fi
-    ${pkgs.python3}/bin/python3 ${../../cluster/applications/t3-code/runtime/setup-clis.py}
-    exec ${pkgs.python3}/bin/python3 ${../../cluster/applications/t3-code/runtime/runtime.py}
+    exec ${pkgs.python3}/bin/python3 /etc/t3-code/runtime/start.py
   '';
   env = [ "PATH=/bin" "HOME=/data/home" "SHELL=/bin/bash"
     "T3CODE_HOME=/data/t3" "NIX_REMOTE=daemon" "LD_LIBRARY_PATH=${libraryPath}"

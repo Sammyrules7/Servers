@@ -14,3 +14,4 @@ configMapGenerator:
       - runtime/runtime.py
       - runtime/setup-clis.py
       - runtime/start.py
+      - runtime/forward-forgejo.py

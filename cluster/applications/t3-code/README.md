@@ -24,7 +24,11 @@ rolls out script fixes even when the base Nix image is unchanged. This prevents
 an old image's embedded updater from restoring a dev build. The existing image
 remains valid on every node; no image publication or NixOS rollout is needed
 for updater changes. The files under `runtime/` are authoritative; the image
-sources use symlinks to the same files.
+sources use symlinks to the same files. That includes `start.py`, which starts
+the Forgejo relay before it configures the CLIs: the deployment's `command` runs
+the ConfigMap copy, and the image entrypoint delegates to that same copy so a
+baked bootstrap cannot drift from the pod's host model. The delegation itself
+takes effect the next time the image is rebuilt.
 
 Codex's login and configuration are persisted at `/data/home/.codex` (explicit
 `CODEX_HOME`). T3 settings, conversations, pairing grants, and provider state
@@ -42,24 +46,37 @@ CLI configurations under the persisted `/data/home/.config`. Token changes
 are picked up at the next pod restart. No token is embedded in the image.
 
 Git LFS is installed and its global filters are initialized at startup. HTTPS
-Git transfers to `forgejo.maio-tech.com` use HTTP/1.1 to avoid HTTP/2 stream
-resets through the public proxy; other hosts keep Git's default protocol.
-Inside this container, Git rewrites `https://forgejo.maio-tech.com/` to the
-in-cluster Forgejo HTTP service, keeping the public URL saved in
-`remote.origin.url`. Git LFS uses the same direct endpoint. A host-scoped
-credential helper reads the mounted Forgejo token when needed, without copying
-it into Git configuration.
+Git transfers to `forgejo.maio-tech.com` stay inside the cluster: the deployment
+adds a `hostAliases` entry that resolves that name to `127.0.0.1` for this pod
+only, and `runtime/forward-forgejo.py` relays it to the Forgejo HTTP service on
+ports 80 and 443. Port 443 needs a certificate for the public name because `fj`
+builds https for a bare hostname, which its default host is, and Forgejo
+advertises https clone and LFS URLs; cert-manager issues it from the existing
+cluster issuer through the Cloudflare solver. The container adds
+`NET_BIND_SERVICE` for those two ports. Cluster DNS, the `ingress` namespace, and
+the public route are untouched.
+
+A host-scoped credential helper reads the mounted Forgejo token when Git needs a
+password, without copying the token into Git configuration. `setup-clis.py`
+declares that helper inline for `https://forgejo.maio-tech.com`; the image's own
+`git-credential-forgejo.py` answers only for the retired in-cluster endpoint and
+is no longer referenced. The token is registered with `fj` as
+`forgejo.maio-tech.com` and with `tea` as `https://forgejo.maio-tech.com`. A
+failed login step is retried and then only logged, leaving its marker absent so
+the next start retries, rather than holding the pod in a crash loop while Git and
+T3 still work.
 
 `git remote get-url` (and `git remote -v`), not `remote.origin.url`, is what T3
-reads to decide which Forgejo server a repository lives on, and it reports the
-rewritten in-cluster endpoint. T3 resolves that host against `fj`/`tea` logins,
-so the token is registered for both `https://forgejo.maio-tech.com` and
-`http://forgejo-http.forgejo.svc.cluster.local:3000`. Without the second login
-T3's Forgejo provider fails with "No matching Forgejo login" and pull request
-lookups and automatic thread settlement are skipped. The gateway cannot serve
-this instead: it enforces Cloudflare Authenticated Origin Pulls, so only
-Cloudflare may connect to it, and a plain `hostAliases` would hijack the public
-hostname for every port and tool in the pod.
+reads to decide which Forgejo server a repository lives on, and pull request
+links are written with the public host. T3 only reports change requests when the
+two agree: rewriting Git to the in-cluster service — as an earlier revision did
+to keep transfers off the public proxy — made `git remote get-url` report
+`forgejo-http.forgejo.svc.cluster.local:3000`, so T3 logged "Change requests
+cannot be browsed for this project's host yet." and skipped pull request sync
+while its provider lookup kept working. The gateway cannot serve this pod
+instead: it enforces Cloudflare Authenticated Origin Pulls on every listener, so
+it demands a client certificate that no in-cluster client has and the pod's
+trust store cannot verify.
 
 The image uses the host's read-only `/nix/store` and Nix daemon socket. Builds and
 substitutions therefore share the host cache, including Attic. A dedicated UID

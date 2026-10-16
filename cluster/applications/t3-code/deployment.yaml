@@ -34,6 +34,14 @@ spec:
         app: t3-code
     spec:
       hostname: kubernetes
+      # T3 keys a repository by the host `git remote get-url` reports and matches
+      # it against the host on each pull request link, so the pod answers Forgejo's
+      # public name itself (runtime/forward-forgejo.py) rather than rewriting Git to
+      # the in-cluster service. This pod only; cluster DNS is untouched.
+      hostAliases:
+        - ip: 127.0.0.1
+          hostnames:
+            - forgejo.maio-tech.com
       serviceAccountName: t3-code
       automountServiceAccountToken: true
       securityContext:
@@ -54,6 +62,8 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
+              # The forwarder listens on the ports Forgejo's URLs use.
+              add: [NET_BIND_SERVICE]
           ports:
             - name: http
               containerPort: 3773
@@ -88,6 +98,9 @@ spec:
             - name: cli-tokens
               mountPath: /run/cli-tokens
               readOnly: true
+            - name: forgejo-tls
+              mountPath: /etc/t3-code/tls
+              readOnly: true
             - name: tmp
               mountPath: /tmp
             - name: data
@@ -110,6 +123,13 @@ spec:
         - name: cli-tokens
           secret:
             secretName: t3-code-cli-tokens
+            defaultMode: 0440
+        - name: forgejo-tls
+          secret:
+            secretName: t3-code-forgejo-tls
+            # The pod still serves Git, T3 and the plaintext port when the
+            # certificate is missing; only the https listener reports the failure.
+            optional: true
             defaultMode: 0440
         - name: tmp
           emptyDir: {}
