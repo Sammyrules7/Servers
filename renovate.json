@@ -65,6 +65,14 @@
       "pinDigests": false
     },
     {
+      "description": "Hold the OpenClaw runtime and its bundled plugin. From 2026.10.x the boot-time `doctor --fix` fails closed with `EPERM ... fchmod` when the state-dir root is owned by another user, which is exactly what a Kubernetes fsGroup-mounted PVC (/home/openclaw/.openclaw) produces, so the container never becomes ready. Re-enable once the operator mounts the state dir at a runtime-owned path.",
+      "matchPackageNames": [
+        "ghcr.io/openclaw/openclaw",
+        "@openclaw/discord"
+      ],
+      "enabled": false
+    },
+    {
       "description": "Nix store images are rebuilt by Nix, not fetched from a Docker registry.",
       "matchDatasources": [
         "docker"
