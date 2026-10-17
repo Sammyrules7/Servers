@@ -9,7 +9,7 @@ spec:
     namespace: garage-cluster
   globalAlias: vr-platform-web
   quotas:
-    maxSize: 5Gi
+    maxSize: 10Gi
     maxObjects: 1000
   website:
     enabled: true

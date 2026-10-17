@@ -8,4 +8,4 @@ resources:
   - garage-token.yaml
   - ingress.yaml
   - luanti-builds-grant.yaml
-  - luanti-garage-grant.yaml
+  - garage-grants.yaml
