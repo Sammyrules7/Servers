@@ -26,6 +26,11 @@ spec:
             cache:
               enabled: true
               dir: /data/cache
+              # Bind externally and pin the port: the job pods' NetworkPolicy
+              # (public-internet-only) only allows egress to the runner on
+              # 42503, and a randomized listener port is unreachable.
+              host: "0.0.0.0"
+              port: 42503
             container:
               docker_host: "-"
               workdir_parent: shared/workdir
