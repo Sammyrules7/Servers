@@ -1,0 +1,19 @@
+# Stable address for the forgejo runner's cache proxy. Job pods receive
+# ACTIONS_CACHE_URL built from cache.host + cache.proxy_port; the Service
+# makes that URL survive runner pod restarts and keeps the traffic inside
+# the cluster (the public-internet-only NetworkPolicy allows job pods to
+# reach runner pods on this port).
+apiVersion: v1
+kind: Service
+metadata:
+  name: forgejo-runner
+  namespace: forgejo
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: forgejo-runner
+  ports:
+    - name: cache
+      protocol: TCP
+      port: 42503
+      targetPort: 42503

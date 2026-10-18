@@ -11,6 +11,7 @@ resources:
   - forgejo.yaml
   - runners.yaml
   - runner-reg-secret.enc.yaml
+  - runner-cache-service.yaml
   - network-policy.yaml
   - ingress.yaml
   - dashboard.yaml
