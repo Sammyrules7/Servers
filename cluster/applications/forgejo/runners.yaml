@@ -99,7 +99,13 @@ spec:
                 resources:
                   requests:
                     cpu: 100m
-                    memory: 256Mi
+                    # Godot import (BPTC-compressing rebaked lightmap atlases)
+                    # transiently peaks around 6 GiB. Reserving enough headroom
+                    # keeps job pods off server1, whose 8 GiB capacity has
+                    # twice let a big import suffocate the k3s apiserver
+                    # process and drop every exec websocket (job fails with
+                    # "websocket: close 1006" mid-reimport of a .exr atlas).
+                    memory: 7Gi
                 volumeMounts:
                   - mountPath: /nix/store
                     name: nix-store
