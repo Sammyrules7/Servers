@@ -154,6 +154,7 @@ kind: Service
 metadata:
   name: t3-code
 spec:
+  publishNotReadyAddresses: true
   selector:
     app: t3-code
   ports:
