@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m
   ref:
-    branch: Multiplayer
+    branch: main
   url: https://forgejo.maio-tech.com/Sammy/Generic-Vr-Platform.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
