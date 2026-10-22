@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - ./node-feature-discovery
   - ./openclaw-operator
   - ./longhorn
   - ./victoria-metrics
@@ -8,5 +9,6 @@ resources:
   - ./garage
   - ./ingress
   - ./keda
+  - ./intel-gpu
   - ./kured
   - sops-age-key.yaml

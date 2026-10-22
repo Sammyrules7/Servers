@@ -101,6 +101,8 @@ in {
         ''))
     ];
 
+    boot.kernelModules = [ "i915" ];
+
     services.nix-snapshotter.enable = true;
 
     # Ensure the CRI image-service socket exists before k3s starts.

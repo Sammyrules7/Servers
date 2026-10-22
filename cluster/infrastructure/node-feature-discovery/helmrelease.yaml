@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: node-feature-discovery
+  namespace: node-feature-discovery
+spec:
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  chart:
+    spec:
+      chart: node-feature-discovery
+      version: "0.20.0"
+      sourceRef:
+        kind: HelmRepository
+        name: node-feature-discovery
+        namespace: flux-system
+  interval: 1h
+  values:
+    master:
+      enable: true
+    worker:
+      enable: true
+      config:
+        sources:
+          pci:
+            deviceClassWhitelist:
+              - "03"
+            deviceLabelFields:
+              - "class"
+              - "vendor"
+              - "device"
