@@ -50,6 +50,19 @@ spec:
         runAsNonRoot: true
         fsGroup: 1773
         fsGroupChangePolicy: OnRootMismatch
+      # server2 is the oldest, slowest machine. Prefer any other node by name, but
+      # keep the pod schedulable there so a loss of the other nodes or capacity
+      # pressure still lets T3 start.
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - server2
       containers:
         - name: t3-code
           image: nix:0/nix/store/gyfrzn8fzqndfz5p1jhzn393pi1r9k2l-nix-image-t3-code.tar

@@ -7,6 +7,11 @@ pairing path and token. Pairing URLs are credentials.
 The environment advertises the friendly name `Kubernetes` from the mounted
 `/etc/machine-info`; its container hostname is the stable `kubernetes`.
 
+Scheduling avoids `server2`, the slowest node, by name: it runs there only when
+no other node can take the pod. The preference is deliberately soft so a loss of
+the other nodes or capacity pressure must not leave T3 unschedulable. Longhorn
+keeps `/data` available either way, so a fallback costs latency, not data.
+
 The supervisor resolves `t3@nightly`, `@openai/codex@latest`, and stable
 OpenCode 2 (`@opencode/cli@latest`) at startup and checks hourly. T3 and Codex
 use npm with lifecycle scripts disabled. OpenCode uses the official glibc/x86_64
