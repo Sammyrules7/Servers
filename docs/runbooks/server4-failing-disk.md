@@ -4,28 +4,37 @@ Contain new placement without a disk swap or planned downtime. This is not a
 complete write block: existing Longhorn replicas, Garage and other local data
 continue writing. Backups and healthy replica capacity remain essential.
 
-## Longhorn fence
+## Longhorn fence (removed)
 
-`cluster/infrastructure/longhorn/server4-write-fence.yaml` reconciles every minute
-once deployed by Flux. It sets the Longhorn node and every discovered disk's
-`allowScheduling` to false. It does not request eviction, drain, delete replicas,
-or change volume replica counts. First enforcement follows the next scheduled
-Job after reconciliation; this commit alone is not proof the fence is active.
-The service account can only read/patch the server4 Longhorn node.
+The `server4-write-fence` CronJob was removed on 2026-10-22. It had reconciled
+every minute, setting the Longhorn node and every discovered disk's
+`allowScheduling` to false. It never requested eviction, drained the node, or
+deleted replicas.
 
-Verify after normal reconciliation (read-only):
+**Nothing now enforces the fence.** The flag survives only as stored state in the
+`server4` `LonghornNode` custom resource. Longhorn does not reset it during normal
+operation, but a recreated node object defaults to `allowScheduling: true`, which
+would let new replicas land on the failed disk.
+
+Verify the fence is still in place (read-only):
 
 ```sh
-kubectl -n longhorn-system get cronjob server4-write-fence
-kubectl -n longhorn-system get jobs --sort-by=.metadata.creationTimestamp
 kubectl -n longhorn-system get nodes.longhorn.io server4 -o yaml
 kubectl -n longhorn-system get volumes.longhorn.io
+kubectl -n longhorn-system get replicas.longhorn.io -o custom-columns=NAME:.metadata.name,VOLUME:.spec.volumeName,NODE:.spec.nodeID,STATE:.status.currentState
 ```
 
-Confirm node AND all disk scheduling flags are false, no eviction is requested,
-and volumes retain healthy replicas. Investigate failed Jobs; do not compensate
-by deleting replicas. New/rebuilt replicas need sufficient healthy disk capacity
-elsewhere. Best-effort locality cannot override disabled scheduling.
+Confirm the node AND every disk report `allowScheduling: false`, no eviction is
+requested, and volumes retain healthy replicas. If a flag has flipped back to
+true, re-apply it immediately:
+
+```sh
+kubectl -n longhorn-system patch nodes.longhorn.io server4 --type=merge -p '{"spec":{"allowScheduling":false}}'
+```
+
+Do not compensate by deleting replicas. New/rebuilt replicas need sufficient
+healthy disk capacity elsewhere. Best-effort locality cannot override disabled
+scheduling.
 
 ## Optional operator cordon; never automatic drain
 
