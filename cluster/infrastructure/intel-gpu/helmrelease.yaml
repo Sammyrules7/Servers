@@ -22,6 +22,7 @@ spec:
   interval: 1h
   values:
     sharedDevNum: 1
+    bypathMode: none
     enableMonitoring: false
     allocationPolicy: "none"
     nodeFeatureRule: true
