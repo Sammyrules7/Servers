@@ -11,7 +11,7 @@ spec:
   wait: true
   timeout: 15m
   path: ./cluster/applications
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
