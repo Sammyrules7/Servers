@@ -15,6 +15,7 @@ metadata:
   name: luanti
   namespace: flux-system
 spec:
+  suspend: true
   interval: 5m
   path: ./cluster
   prune: true
