@@ -23,3 +23,7 @@ spec:
     name: luanti
   timeout: 5m
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age-key
