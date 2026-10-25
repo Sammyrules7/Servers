@@ -16,8 +16,8 @@ spec:
 
   serviceTemplate:
     spec:
-      # Keep clients connected when their node's pooler is restarting or absent.
-      internalTrafficPolicy: Cluster
+      # Each current node has a pooler; clients use their local instance.
+      internalTrafficPolicy: Local
 
   template:
     spec:
