@@ -78,3 +78,15 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+
+    - name: websecure-luanti-map
+      port: 443
+      protocol: HTTPS
+      hostname: "map.luanti.maio-tech.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: luanti-map-letsencrypt-cert
+      allowedRoutes:
+        namespaces:
+          from: All
