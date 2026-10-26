@@ -44,7 +44,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: generator
-          image: bitnami/kubectl:latest@sha256:9962c17eecf0e7668327171223f3cad4d6f9005b98c47d8af2d77c095e269b97
+          image: bitnami/kubectl:latest@sha256:6d9e8ad566a6d2dcb4a7a6120d030bd65bddbcc952246f4b31022834d9be7e02
           command:
             - /bin/bash
             - -c

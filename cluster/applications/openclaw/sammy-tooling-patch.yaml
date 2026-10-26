@@ -2,7 +2,7 @@
   path: /spec/initContainers/-
   value:
     name: install-go
-    image: golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
+    image: golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5
     imagePullPolicy: IfNotPresent
     command:
       - sh
@@ -51,7 +51,7 @@
   path: /spec/initContainers/-
   value:
     name: install-forgejo-tools
-    image: curlimages/curl:8.23.0@sha256:a134550be58ab783810e613ae96fd253c38f7bdd16d9bf9be350700c7a29ac06
+    image: curlimages/curl:8.23.0@sha256:11e64e28c5f58c8d93ee95fcf22ac055f48b0bc440e0ce7d8013bbb5ad6aa8ac
     imagePullPolicy: IfNotPresent
     command:
       - sh
@@ -71,16 +71,16 @@
           touch /data/.local/.tea-0.16.0
         fi
         # Pinned upstream release; install CLI only, never provision credentials.
-        if [ ! -x /data/.local/bin/gh ] || [ ! -f /data/.local/.gh-2.102.0 ]; then
+        if [ ! -x /data/.local/bin/gh ] || [ ! -f /data/.local/.gh-2.103.2 ]; then
           curl -fsSL -o /tmp/forgejo-tools/gh.tar.gz \
-            https://github.com/cli/cli/releases/download/v2.102.0/gh_2.102.0_linux_amd64.tar.gz
-          echo "bb766f710eef8ede859c18578c72c327597cd4c8a85b06001b1f3843c6019386  /tmp/forgejo-tools/gh.tar.gz" \
+            https://github.com/cli/cli/releases/download/v2.103.2/gh_2.103.2_linux_amd64.tar.gz
+          echo "62ccf747115ddc61237efffdde66a3c8f70ba249433dc64f70801089b59c59c8  /tmp/forgejo-tools/gh.tar.gz" \
             | sha256sum -c -
           tar -xzf /tmp/forgejo-tools/gh.tar.gz -C /tmp/forgejo-tools \
-            gh_2.102.0_linux_amd64/bin/gh
-          install -m 0755 /tmp/forgejo-tools/gh_2.102.0_linux_amd64/bin/gh /data/.local/bin/gh
+            gh_2.103.2_linux_amd64/bin/gh
+          install -m 0755 /tmp/forgejo-tools/gh_2.103.2_linux_amd64/bin/gh /data/.local/bin/gh
           /data/.local/bin/gh --version
-          touch /data/.local/.gh-2.102.0
+          touch /data/.local/.gh-2.103.2
         fi
         cp /tooling/forgejo-SKILL.md /data/workspace/skills/forgejo/SKILL.md
     securityContext:

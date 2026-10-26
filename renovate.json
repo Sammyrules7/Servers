@@ -7,7 +7,8 @@
   "ignorePaths": [
     "**/*.nix",
     "**/flake.lock",
-    "**/*.enc.yaml"
+    "**/*.enc.yaml",
+    "**/cluster/flux-system/gotk-components.yaml"
   ],
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",

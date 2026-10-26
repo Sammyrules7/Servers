@@ -25,7 +25,7 @@
   path: /spec/initContainers
   value:
     - name: install-common-tools
-      image: curlimages/curl:8.23.0@sha256:a134550be58ab783810e613ae96fd253c38f7bdd16d9bf9be350700c7a29ac06
+      image: curlimages/curl:8.23.0@sha256:11e64e28c5f58c8d93ee95fcf22ac055f48b0bc440e0ce7d8013bbb5ad6aa8ac
       imagePullPolicy: IfNotPresent
       command:
         - sh
@@ -47,14 +47,14 @@
             touch /data/.local/.jq-1.8.2
           fi
 
-          if [ ! -f /data/.local/.gog-0.45.0 ]; then
+          if [ ! -f /data/.local/.gog-0.47.0 ]; then
             curl -fsSL -o /tmp/openclaw-tools/gog.tar.gz \
-              https://github.com/steipete/gogcli/releases/download/v0.45.0/gogcli_0.45.0_linux_amd64.tar.gz
-            echo "aa39f6149d6a1482cd71b7baf21b9c7a4bf87fe9e9118439c4e97026063e915f  /tmp/openclaw-tools/gog.tar.gz" \
+              https://github.com/steipete/gogcli/releases/download/v0.47.0/gogcli_0.47.0_linux_amd64.tar.gz
+            echo "c3ed94efca90c754cdda300e3c7f8cc2f3d7df86d3fdc5d11f996c7518a09c24  /tmp/openclaw-tools/gog.tar.gz" \
               | sha256sum -c -
             tar -xzf /tmp/openclaw-tools/gog.tar.gz -C /tmp/openclaw-tools
             install -m 0755 /tmp/openclaw-tools/gog /data/.local/bin/gog
-            touch /data/.local/.gog-0.45.0
+            touch /data/.local/.gog-0.47.0
           fi
 
           cp /tooling/developer-tooling-SKILL.md \
@@ -83,7 +83,7 @@
           mountPath: /tooling
           readOnly: true
     - name: setup-python-pip
-      image: debian:bookworm-slim@sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587
+      image: debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
       imagePullPolicy: IfNotPresent
       command:
         - sh
