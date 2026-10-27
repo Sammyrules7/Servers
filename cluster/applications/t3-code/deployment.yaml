@@ -71,6 +71,16 @@ spec:
           env:
             - name: CODEX_HOME
               value: /data/home/.codex
+            # Kilo Gateway (api.kilo.ai/api/gateway) for OpenCode. The key is
+            # optional so the pod still starts before Flux decrypts the secret;
+            # models.dev models kilo on the KILO_API_KEY variable, which OpenCode
+            # resolves itself, so no OpenCode auth login is required.
+            - name: KILO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-kilo-api-key
+                  key: kilo-api-key
+                  optional: true
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

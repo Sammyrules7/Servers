@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: t3-code-kilo-api-key
+    namespace: t3-code
+type: Opaque
+stringData:
+    kilo-api-key: ENC[AES256_GCM,data:TKlrTc9ea/hF2Ai9Ih4AnILoCisCggh2cSBNlaHH3uC5h77X6ewEAALbFGOBFMJsrCD/uQxIHe4nQ56O2he/P+VaE7n11M0SaJi2mRaDquevW6xdqT38ZyXEhYjJtJap/H97ErwVvjI18bZqoyORUKwh24PspegcXUt7l4g7FKsssb1MrEBucd5YNkuB/zbTxLswp423mUmkKPJFIwLdWlgEsX9ztjamfzZUnS4ntRxTgecZjPijE2jyLkGBfJ52ZdLjBCjujSY9aZdEURMS8TLiGHQvQqeS+JrNyBbjgK28RHy4PUHiK1zAykSiWCjC9qQsuKuLTYSURyugpMtIxj3Io/hEzOgcYj4dag==,iv:LUMDwu6KDm5Vu7wg9VPtHcI3XwcqDy82CCHnYc9fKy0=,tag:Omra3Zn+6vnU1W1b9SEiBA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHNzaC1lZDI1NTE5IHEyMURhQSA2RVVo
+            YlhZOG0yZ0lUM2VJbU5WTkdxOUh6K3RHRGY1K2VSQkJWUEhhMXpvCksxWSthVFc5
+            R2lKTmRxYUJSRExScVdsSG9WL3Y5OWI1YmFCN0h3dGh4RDgKLS0tIE5memtKUXlh
+            L2Z3UjBjU0Y3R2RNeStuL2RaVTE0VkxwVXBOUjEvbW1pUzQKovqGbQ3Q+rRxC5V1
+            MwDZQNRs9HQU2n4MXXXwANicMJQYFHC3GMa42AoOcRJ/sScqmhbagXLOuqmgtebb
+            bgX7iA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICBbJZYAoaiso9r80YdbBkqFZ1bggET4EEkzZ9ckBbGW
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHNzaC1lZDI1NTE5IHFodDFMQSBWRW1E
+            SXNKMEpCNkRSSVlGUWlncUNnNHdlTUttMmVXTVlXNS9JVzZvc2hZCjQ2SVczMEtY
+            Mm1WR21GWnhENWkyeGFmK1d3cWRsbjR0WjJpaFJvb3hreUkKLS0tIG1vTlJndFdW
+            QlAwZHFnRmQvZVdHVGN0c0NNTWwzSHVRaHlDVDIvcFkzeFkKzp0GJs+WNOtjOaek
+            Amkr1pd1PKEVIWnA+GDuf2zr+PbQdpZVV0/kuMDZreaXCiHZ3pJo8wdzta6EgMxU
+            aKnijw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvbJQ3KnO165S9pyfQ5qHXFv51cw3LmsvUn6Xo2Bbr7
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBRWk0zdnI3V3FMS3IrUE9Z
+            dm05RDhTMnZGN2IvWXZ2VlhrbjQyZ2o2TVVRCjNjc3BMdXluZ1dKajhXdm5qcWxJ
+            cjMzYlhwYmNNUWJxanU5Snd1L1kyTTgKLS0tIGs1dTV3YjBsOGdURExGZW5kenBX
+            M25TMmNUMlMrSytlQVp5bDRrcElRWnMKxl2zfFYaCA1xJJEwPo0PD0Uwhva15aKz
+            9fygZvuIvbtQeqmmiDjohsVEW0YPAQvpkHZe9Y8L1il+F0XHkUDjoQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1mnacljduxclddus4xa83h079w0yqz94h22kxwxjqj26vu6fg2ckqc3gymn
+    encrypted_regex: ^(data|stringData|password|token|secret)$
+    lastmodified: "2026-10-27T19:55:28Z"
+    mac: ENC[AES256_GCM,data:Qhx28pC0gSDg5ptQoRM57Nptfr5BVAKQEIdIEArUBBy2Njx9WsWsBsuHPR8Dsja88ierVCQidjq6MoICicGWXNCsMU7qdznpMoAcFb5aQeryVGYVNiVUlTugudXHaLfZw42fATxK5NBIFr8KvRTzU9/E4PgUvObgAVZKu3GYFjk=,iv:NIJM4iu8J+zrN4oeq6IzlrD06IOx7Ac7XEZDBwJzlNk=,tag:TSNbsmXLdl7q4CD53S1XYA==,type:str]
+    version: 3.13.3

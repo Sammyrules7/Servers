@@ -48,7 +48,10 @@ login. Both use the supplied Forgejo token. `gh` uses the existing GitHub login
 and configures HTTPS Git authentication. The tokens are stored in the SOPS
 encrypted `cli-tokens.enc.yaml` and mounted read-only; startup initializes the
 CLI configurations under the persisted `/data/home/.config`. Token changes
-are picked up at the next pod restart. No token is embedded in the image.
+are picked up at the next pod restart. No token is embedded in the image. The
+SOPS encrypted `kilo-api-key.enc.yaml` holds a Kilo Gateway key, exposed as the
+pod environment variable `KILO_API_KEY`; OpenCode resolves it for the models.dev
+Kilo Gateway provider, so no interactive OpenCode login is needed.
 
 Git LFS is installed and its global filters are initialized at startup. HTTPS
 Git transfers to `forgejo.maio-tech.com` stay inside the cluster: the deployment
