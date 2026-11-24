@@ -6,6 +6,7 @@ resources:
   - main-instances.yaml
   - applications.yaml
   - satisfactory.yaml
+  - lightning.yaml
 # Keep generated bootstrap manifests intact and exclude the root from its own checks.
 patches:
   - target:

@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lightning
+spec:
+  clusterIP: None
+  selector:
+    app: lightning
+  ports:
+    - name: peer
+      port: 9735
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lightning
+spec:
+  serviceName: lightning
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lightning
+  template:
+    metadata:
+      labels:
+        app: lightning
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/hostname: server1
+      terminationGracePeriodSeconds: 150
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bitcoin
+          image: bitcoin/bitcoin:31.0
+          command: [bitcoind]
+          args:
+            - -datadir=/bitcoin
+            - -server
+            - -rpcbind=127.0.0.1
+            - -rpcallowip=127.0.0.1
+            - -listen=0
+            - -disablewallet
+            - -prune=16384
+            - -dbcache=384
+            - -par=1
+            - -printtoconsole
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1536Mi
+          volumeMounts:
+            - name: chain
+              mountPath: /bitcoin
+        - name: lightning
+          image: elementsproject/lightningd:v26.06.6
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              until bitcoin-cli -datadir=/bitcoin getblockchaininfo |
+                jq -e '.initialblockdownload == false' >/dev/null; do
+                sleep 30
+              done
+              umask 077
+              config="$(mktemp)"
+              printf 'wallet=%s?sslmode=require\n' "postgres:${DATABASE_URI#*:}" > "$config"
+              unset DATABASE_URI
+              exec lightningd --conf="$config" --network=bitcoin \
+                --lightning-dir=/lightning --bitcoin-datadir=/bitcoin \
+                --autolisten=false
+          env:
+            - name: DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: lightning-db-app
+                  key: uri
+          readinessProbe:
+            exec:
+              command: [lightning-cli, --lightning-dir=/lightning, getinfo]
+            periodSeconds: 15
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          volumeMounts:
+            - name: chain
+              mountPath: /bitcoin
+              readOnly: true
+            - name: identity
+              mountPath: /lightning
+  volumeClaimTemplates:
+    - metadata:
+        name: chain
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 40Gi
+    - metadata:
+        name: identity
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 2Gi

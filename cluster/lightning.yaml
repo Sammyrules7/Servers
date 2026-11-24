@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: lightning
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infrastructure
+  interval: 5m
+  path: ./cluster/lightning
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
