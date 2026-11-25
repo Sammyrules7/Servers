@@ -48,7 +48,6 @@ spec:
             - -disablewallet
             - -prune=16384
             - -dbcache=384
-            - -par=1
             - -printtoconsole
           securityContext:
             allowPrivilegeEscalation: false
@@ -59,7 +58,6 @@ spec:
               cpu: 250m
               memory: 512Mi
             limits:
-              cpu: "1"
               memory: 1536Mi
           volumeMounts:
             - name: chain
